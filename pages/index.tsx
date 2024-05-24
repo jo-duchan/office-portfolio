@@ -2,10 +2,17 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
+import { db } from "@/lib/firebase/firebase-config";
+import { collection, addDoc } from "firebase/firestore";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const test = async () => {
+    console.log("test");
+
+    await addDoc(collection(db, "test"), { say: "hello" });
+  };
   return (
     <>
       <Head>
@@ -93,11 +100,12 @@ export default function Home() {
             </p>
           </a>
 
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+          <button
+            // href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
             className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
+            // target="_blank"
+            // rel="noopener noreferrer"
+            onClick={test}
           >
             <h2>
               Deploy <span>-&gt;</span>
@@ -106,7 +114,7 @@ export default function Home() {
               Instantly deploy your Next.js site to a shareable URL
               with&nbsp;Vercel.
             </p>
-          </a>
+          </button>
         </div>
       </main>
     </>
