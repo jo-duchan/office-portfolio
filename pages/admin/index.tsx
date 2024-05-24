@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function AdminPortfolioListPage() {
-  return <div>Admin Portfolio List</div>;
+export default function AdminAuthPage() {
+  return <div>Admin Auth List</div>;
 }
