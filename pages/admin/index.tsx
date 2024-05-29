@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-export default function AdminAuthPage() {
-  return <div>Admin Auth List</div>;
+export default function AdminPortfolioListPage() {
+  useEffect(() => {
+    console.log("Admin Portfolio List");
+  }, []);
+  return <div>Admin Portfolio List</div>;
 }

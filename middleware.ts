@@ -1,14 +1,22 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import PATH from "@/constants/path";
+import { SESSION_COOKIE_NAME } from "@/constants/cookies";
 
-// This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
-  // user auth 체크 후
-  // 미인증 시 login page로
-  return NextResponse.redirect(new URL("/", request.url));
+function middleware(request: NextRequest) {
+  const session = request.cookies.get(SESSION_COOKIE_NAME)?.value || "";
+  console.log("middleware", session);
+  // user 체크
+  if (!session) {
+    // 미인증 시 login page로
+    const absoluteURL = new URL(PATH.AUTH, request.nextUrl.origin);
+
+    return NextResponse.redirect(absoluteURL.toString());
+  }
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: ["/admin/:path*"],
 };
+
+export default middleware;
