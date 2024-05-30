@@ -7,22 +7,19 @@ export async function createSession(token: string) {
       },
       body: JSON.stringify({ token }),
     });
+
     return result;
   } catch (error) {
-    console.error("Session creation failed", error);
+    console.error("Failed to create session", error);
   }
 }
 
 export async function removeSession() {
   try {
-    const result = fetch("/api/remove-cookies", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const result = fetch("/api/remove-cookies");
+
     return result;
   } catch (error) {
-    console.error("Session creation failed", error);
+    console.error("Failed to remove session", error);
   }
 }

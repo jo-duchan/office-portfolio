@@ -12,16 +12,14 @@ export function onAuthStateChanged(callback: (authUser: User | null) => void) {
 }
 
 export async function signIn(email: string, password: string) {
-  // const router = useRouter();
-  // email, password 유효성 체크 필요
   try {
     const credential = await signInWithEmailAndPassword(auth, email, password);
     const { user } = credential;
     const token = await user.getIdToken();
     const result = await createSession(token);
+
     return result;
   } catch (error) {
-    // error 처리
     console.error("Error signing in", error);
   }
 }

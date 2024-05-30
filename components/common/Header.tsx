@@ -3,15 +3,10 @@ import { signIn, signOut } from "@/libs/firebase/auth";
 import { useRouter } from "next/router";
 import PATH from "@/constants/path";
 
-interface Props {
-  session: any;
-}
-
-function Header({ session }: Props) {
-  const userSessionId = useUserSession(session);
+function Header() {
+  const userSessionId = useUserSession(null);
   const router = useRouter();
 
-  // const handleSignIn = () => {};
   const handleSignOut = () => {
     signOut();
     router.push(PATH.ROOT);

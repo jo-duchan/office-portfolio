@@ -4,8 +4,7 @@ import { SESSION_COOKIE_NAME } from "@/constants/cookies";
 
 function middleware(request: NextRequest) {
   const session = request.cookies.get(SESSION_COOKIE_NAME)?.value || "";
-  console.log("middleware", session);
-  // user 체크
+  // user session 체크
   if (!session) {
     // 미인증 시 login page로
     const absoluteURL = new URL(PATH.AUTH, request.nextUrl.origin);

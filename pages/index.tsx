@@ -10,7 +10,7 @@ import { onAuthStateChanged } from "@/libs/firebase/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home(props: { test: string }) {
+export default function Home() {
   const test = async () => {
     console.log("test");
 
@@ -131,10 +131,14 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
   const test = context.req.cookies[SESSION_COOKIE_NAME] || "";
+  // console.log("server test", test);
 
   return {
-    props: {
-      test,
-    },
+    props: {},
   };
+  // return {
+  //   props: {
+  //     test,
+  //   },
+  // };
 };
