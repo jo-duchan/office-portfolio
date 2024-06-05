@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { deleteCookie } from "cookies-next";
 import { SESSION_COOKIE_NAME } from "@/constants/cookies";
 
 export default async function handler(
@@ -6,9 +7,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const option = `${SESSION_COOKIE_NAME}=; max-age=-1; path=/; HttpOnly`;
-
-    res.setHeader("Set-Cookie", option);
+    deleteCookie(SESSION_COOKIE_NAME, { req, res });
 
     return res.status(200).json({ message: "Remove Cookie" });
   } catch (e) {

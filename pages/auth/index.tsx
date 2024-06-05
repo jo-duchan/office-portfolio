@@ -12,7 +12,6 @@ export default function AdminAuthPage() {
     const pass = formData.get("pass") as string;
     const result = await signIn(id, pass);
 
-    console.log(result);
     if (result?.ok) {
       router.push(PATH.ADMIN_HOME);
     }

@@ -1,10 +1,14 @@
-import useUserSession, { type SessionState } from "@/hooks/use-user-session";
-import { signIn, signOut } from "@/libs/firebase/auth";
+import useUserSession from "@/hooks/use-user-session";
+import { signOut } from "@/libs/firebase/auth";
 import { useRouter } from "next/router";
 import PATH from "@/constants/path";
 
-function Header() {
-  const userSessionId = useUserSession(null);
+interface Props {
+  sessionCookie: string | null;
+}
+
+function Header({ sessionCookie }: Props) {
+  const userSessionId = useUserSession(sessionCookie);
   const router = useRouter();
 
   const handleSignOut = () => {

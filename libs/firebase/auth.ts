@@ -1,5 +1,7 @@
 import {
   type User,
+  setPersistence,
+  browserSessionPersistence,
   signInWithEmailAndPassword,
   signOut as _signOut,
   onAuthStateChanged as _onAuthStateChanged,
@@ -13,6 +15,7 @@ export function onAuthStateChanged(callback: (authUser: User | null) => void) {
 
 export async function signIn(email: string, password: string) {
   try {
+    await setPersistence(auth, browserSessionPersistence);
     const credential = await signInWithEmailAndPassword(auth, email, password);
     const { user } = credential;
     const token = await user.getIdToken();

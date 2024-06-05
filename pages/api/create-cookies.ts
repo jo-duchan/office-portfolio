@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { SESSION_COOKIE_NAME } from "@/constants/cookies";
+import { setCookie } from "cookies-next";
 
 export default async function handler(
   req: NextApiRequest,
@@ -7,9 +8,13 @@ export default async function handler(
 ) {
   try {
     const token = req.body.token as string;
-    const maxAge = 60 * 60 * 24;
-    const option = `${SESSION_COOKIE_NAME}=${token}; max-age=${maxAge}; path=/; HttpOnly`;
-    res.setHeader("Set-Cookie", option);
+
+    setCookie(SESSION_COOKIE_NAME, token, {
+      req,
+      res,
+      httpOnly: true,
+      path: "/",
+    });
 
     return res.status(200).json({ message: "Set Cookie" });
   } catch (e) {
