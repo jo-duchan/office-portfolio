@@ -1,9 +1,9 @@
 import type { AppProps, AppContext } from "next/app";
 import Header from "@/components/common/Header";
 import { SESSION_COOKIE_NAME } from "@/constants/cookies";
-import "@/styles/globals.css";
+import GlobalStyle from "@/styles/globals";
 
-interface CustomAppProps extends AppProps {
+interface MyAppProps extends AppProps {
   sessionCookie: string;
 }
 
@@ -11,9 +11,10 @@ export default function App({
   Component,
   pageProps,
   sessionCookie,
-}: CustomAppProps) {
+}: MyAppProps) {
   return (
     <>
+      <GlobalStyle />
       <Header sessionCookie={sessionCookie || null} />
       <Component {...pageProps} />
     </>
