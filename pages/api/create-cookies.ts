@@ -14,6 +14,7 @@ export default async function handler(
       res,
       httpOnly: true,
       path: "/",
+      sameSite: "strict",
     });
 
     return res.status(200).json({ message: "Set Cookie" });
