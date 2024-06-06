@@ -31,33 +31,39 @@ export type ClassNameKey =
   | "fill"
   | "column";
 
-export interface PortfolioAtom {
+export interface PortfolioElement {
   id: string;
   tagName: TagName;
   className: Map<ClassNameKey, string>;
+  content?: {
+    text?: string;
+    image?: Image[];
+  };
+}
+
+export interface PortfolioItem {
+  metadata: PortfolioMetadata;
+  head: PortfolioHead;
+  body: PortfolioElement[];
 }
 
 interface PortfolioState {
-  item: {
-    metadata: PortfolioMetadata;
-    head: PortfolioHead;
-    body: PortfolioAtom[];
-  };
+  item: PortfolioItem;
 }
 
 export interface PortfolioAction {
   reset: () => void;
   updateMetadate: () => void;
   updateHead: () => void;
-  addAtom: () => void;
-  removeAtom: () => void;
-  updateAtom: () => void;
+  addElement: (element: PortfolioElement) => void;
+  removeElement: () => void;
+  updateElement: () => void;
 }
 
 const defaultState = {
   metadata: {} as PortfolioMetadata,
   head: {} as PortfolioHead,
-  body: [] as PortfolioAtom[],
+  body: [] as PortfolioElement[],
 };
 
 const usePortfolioStore = create<PortfolioState & PortfolioAction>()((set) => ({
@@ -65,9 +71,15 @@ const usePortfolioStore = create<PortfolioState & PortfolioAction>()((set) => ({
   reset: () => set({}),
   updateMetadate: () => set({}),
   updateHead: () => set({}),
-  addAtom: () => set({}),
-  removeAtom: () => set({}),
-  updateAtom: () => set({}),
+  addElement: (element: PortfolioElement) =>
+    set((state) => ({
+      item: {
+        ...state.item,
+        body: [...state.item.body, element],
+      },
+    })),
+  removeElement: () => set({}),
+  updateElement: () => set({}),
 }));
 
 export default usePortfolioStore;
