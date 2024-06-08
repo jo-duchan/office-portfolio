@@ -9,9 +9,14 @@ interface Props {
 }
 
 function Renderer({ data, editable }: Props) {
-  return data.body.map((element) => (
-    <RenderItem key={element.id} element={element} editable={editable} />
-  ));
+  return (
+    <>
+      {/* {data.head} */}
+      {data.body.map((element) => (
+        <RenderItem key={element.id} element={element} editable={editable} />
+      ))}
+    </>
+  );
 }
 
 export default Renderer;

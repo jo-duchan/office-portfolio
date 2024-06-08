@@ -1,6 +1,6 @@
 const PATH = {
   ROOT: "/",
-  ADMIN_HOME: "/admin",
+  ADMIN: "/admin",
   AUTH: "/auth",
 };
 

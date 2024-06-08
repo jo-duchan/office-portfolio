@@ -42,6 +42,7 @@ export interface PortfolioElement {
 }
 
 export interface PortfolioItem {
+  id: string;
   metadata: PortfolioMetadata;
   head: PortfolioHead;
   body: PortfolioElement[];
@@ -52,7 +53,7 @@ interface PortfolioState {
 }
 
 export interface PortfolioAction {
-  reset: () => void;
+  init: (id: string) => void;
   updateMetadate: () => void;
   updateHead: () => void;
   addElement: (element: PortfolioElement) => void;
@@ -60,15 +61,14 @@ export interface PortfolioAction {
   updateElement: () => void;
 }
 
-const defaultState = {
-  metadata: {} as PortfolioMetadata,
-  head: {} as PortfolioHead,
-  body: [] as PortfolioElement[],
-};
+const defaultState = {} as PortfolioItem;
 
 const usePortfolioStore = create<PortfolioState & PortfolioAction>()((set) => ({
   item: defaultState,
-  reset: () => set({}),
+  init: (id: string) =>
+    set((state) => ({
+      item: { ...state.item, id },
+    })),
   updateMetadate: () => set({}),
   updateHead: () => set({}),
   addElement: (element: PortfolioElement) =>
