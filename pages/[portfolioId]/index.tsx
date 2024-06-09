@@ -15,6 +15,8 @@ export const getStaticPaths = (async () => {
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   // 서버에서 포트폴리오 데이터 받아오기
+  // html을 저장하지말고, 전역상태 자체를 db에 저장후 db에서 유저로 내려줄때 서버사이드에서
+  // ReactDOMServer.renderToStaticMarkup를 통해 html로 전환하자
   return {
     props: {},
   };

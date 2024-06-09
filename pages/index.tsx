@@ -15,7 +15,7 @@ export default function Home() {
     addElement({
       id: uuidv4(),
       tagName: "h3",
-      className: new Map([["font-size", "font-size-14"]]),
+      className: { "font-size": "font-size-14" },
       content: {
         text: "안녕하세요.",
       },
@@ -24,12 +24,14 @@ export default function Home() {
 
   const handleUploadData = async () => {
     // 업로드 예시
-    const data = ReactDOMServer.renderToStaticMarkup(
-      Renderer({ data: item, editable: false })
-    );
-    console.log(data);
+    // const data = ReactDOMServer.renderToStaticMarkup(
+    //   Renderer({ data: item, editable: false })
+    // );
+    // html을 저장하지말고, 전역상태 자체를 db에 저장후 db에서 유저로 내려줄때 서버사이드에서
+    // ReactDOMServer.renderToStaticMarkup를 통해 html로 전환하자
+    console.log(item);
 
-    await setDoc(doc(db, "portfolio", uuidv4()), { html: data });
+    await setDoc(doc(db, "portfolio", uuidv4()), { ...item });
   };
   return (
     <div>

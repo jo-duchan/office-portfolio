@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { GetStaticPropsContext, GetStaticPaths } from "next";
 import usePortfolioStore from "@/stores/portfolio-store";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/libs/firebase/firebase-config";
 
 export default function AdminPortfolioTopSectionEditPage() {
   const { item, init } = usePortfolioStore((state) => state);
@@ -23,7 +25,15 @@ export const getStaticPaths = (async () => {
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   // 서버에서 포트폴리오 존재 유무 체크(생성인지 수정인지 체크)
+  // console.log(context.params);
+  const docSnap = await getDoc(
+    doc(db, "portfolio", "bcceae8d-6def-434c-82be-4f24ea9d9698")
+  );
+  console.log(docSnap.data());
+
   return {
-    props: {},
+    props: {
+      // data: docSnap.data(),
+    },
   };
 };

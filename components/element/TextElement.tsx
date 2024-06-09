@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import { type PortfolioElement } from "@/stores/portfolio-store";
-import { mapToArray } from "@/utils/utils";
+// import { mapToArray } from "@/utils/utils";
 
 interface BaseProps extends ElementProps {
   tagName: "h3" | "p";
@@ -19,7 +19,8 @@ function TextBase({ data, editable, tagName }: BaseProps) {
   return (
     <div>
       <ContentEditable
-        className={mapToArray(data.className).join(" ")}
+        // className={mapToArray(data.className).join(" ")}
+        className={Object.values(data.className).join(" ")}
         html={text.current}
         innerRef={inner}
         disabled={!editable}

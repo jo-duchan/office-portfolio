@@ -12,7 +12,7 @@ export default function AdminAuthPage() {
     const result = await signIn(data.id, data.pass);
 
     if (result?.ok) {
-      router.push(PATH.ADMIN_HOME);
+      router.push(PATH.ADMIN);
     }
   };
   return (

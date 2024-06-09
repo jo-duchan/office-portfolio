@@ -23,19 +23,22 @@ export interface PortfolioHead {
 
 export type TagName = "h3" | "p" | "img" | "div";
 
-export type ClassNameKey =
-  | "font-size"
-  | "margin"
-  | "aline"
-  | "gap"
-  | "color"
-  | "fill"
-  | "column";
+// export type ClassNameKey =
+//   | "font-size"
+//   | "margin"
+//   | "aline"
+//   | "gap"
+//   | "color"
+//   | "fill"
+//   | "column";
 
 export interface PortfolioElement {
   id: string;
   tagName: TagName;
-  className: Map<ClassNameKey, string>;
+  // className: Map<ClassNameKey, string>;
+  className: {
+    [key: string]: string;
+  };
   content?: {
     text?: string;
     image?: Image[];
