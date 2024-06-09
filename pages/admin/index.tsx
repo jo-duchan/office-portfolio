@@ -10,13 +10,14 @@ export default function AdminPortfolioListPage() {
 
   const handleCreatePortfolio = () => {
     const id = uuidv4();
-    init(id);
+    // init(id);
     router.push(`${PATH.ADMIN}/${id}`);
   };
 
   return (
     <div>
       Admin Portfolio List<button onClick={handleCreatePortfolio}>new</button>
+      {/* list / edit / delete / publish 여부 */}
     </div>
   );
 }

@@ -10,6 +10,7 @@ export interface PortfolioMetadata {
   name: string;
   description: string;
   keyword: string[];
+  publish: boolean;
 }
 
 export interface PortfolioHead {
@@ -53,22 +54,44 @@ interface PortfolioState {
 }
 
 export interface PortfolioAction {
-  init: (id: string) => void;
+  init: ({
+    id,
+    metadata,
+    head,
+    body,
+  }: {
+    id: string;
+    metadata?: PortfolioMetadata;
+    head?: PortfolioHead;
+    body?: PortfolioElement[];
+  }) => void;
   updateMetadate: () => void;
   updateHead: () => void;
   addElement: (element: PortfolioElement) => void;
   removeElement: () => void;
   updateElement: () => void;
+  reset: () => void;
 }
 
-const defaultState = {} as PortfolioItem;
+const defaultState: PortfolioItem = {
+  id: "",
+  metadata: {} as PortfolioMetadata,
+  head: {} as PortfolioHead,
+  body: [] as PortfolioElement[],
+};
 
 const usePortfolioStore = create<PortfolioState & PortfolioAction>()((set) => ({
   item: defaultState,
-  init: (id: string) =>
-    set((state) => ({
-      item: { ...state.item, id },
-    })),
+  init: ({ id, metadata, head, body }) =>
+    set((state) => {
+      const newMetadata = metadata ?? state.item.metadata;
+      const newHead = head ?? state.item.head;
+      const newBody = body ?? state.item.body;
+
+      return {
+        item: { id, metadata: newMetadata, head: newHead, body: newBody },
+      };
+    }),
   updateMetadate: () => set({}),
   updateHead: () => set({}),
   addElement: (element: PortfolioElement) =>
@@ -80,6 +103,7 @@ const usePortfolioStore = create<PortfolioState & PortfolioAction>()((set) => ({
     })),
   removeElement: () => set({}),
   updateElement: () => set({}),
+  reset: () => set({ item: defaultState }),
 }));
 
 export default usePortfolioStore;

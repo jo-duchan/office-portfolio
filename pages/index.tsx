@@ -2,18 +2,18 @@ import Head from "next/head";
 import Image from "next/image";
 import * as ReactDOMServer from "react-dom/server";
 import { db } from "@/libs/firebase/firebase-config";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 import { GetServerSidePropsContext } from "next";
 import Renderer from "@/components/common/Renderer";
 import usePortfolioStore from "@/stores/portfolio-store";
-let num = 1;
+import { v4 as uuidv4 } from "uuid";
 export default function Home() {
-  const { item, addElement } = usePortfolioStore((state) => state);
+  const { item, addElement, init } = usePortfolioStore((state) => state);
   const handleAdd = () => {
     // 아이템 생성 예시
 
     addElement({
-      id: `item-${num++}`,
+      id: uuidv4(),
       tagName: "h3",
       className: new Map([["font-size", "font-size-14"]]),
       content: {
@@ -22,12 +22,14 @@ export default function Home() {
     });
   };
 
-  const handleUploadData = () => {
+  const handleUploadData = async () => {
     // 업로드 예시
     const data = ReactDOMServer.renderToStaticMarkup(
       Renderer({ data: item, editable: false })
     );
     console.log(data);
+
+    await setDoc(doc(db, "portfolio", uuidv4()), { html: data });
   };
   return (
     <div>
@@ -45,10 +47,8 @@ export default function Home() {
   );
 }
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {},
   };
-};
+}
