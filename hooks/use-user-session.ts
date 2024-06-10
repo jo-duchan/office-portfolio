@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "@/libs/firebase/auth";
+import { removeSession } from "@/actions/cookie-actions";
 
 export type SessionState = string | null;
 
@@ -12,6 +13,7 @@ export default function useUserSession(initSession: SessionState) {
         setUserUid(authUser.uid);
       } else {
         setUserUid(null);
+        removeSession();
       }
     });
 
