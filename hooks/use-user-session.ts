@@ -12,8 +12,8 @@ export default function useUserSession(initSession: SessionState) {
       if (authUser) {
         setUserUid(authUser.uid);
       } else {
+        userUid && (await removeSession());
         setUserUid(null);
-        removeSession();
       }
     });
 
