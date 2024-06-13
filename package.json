@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.592.0",
+    "@aws-sdk/s3-request-presigner": "^3.592.0",
     "cookies-next": "^4.2.1",
     "firebase": "^10.12.1",
     "next": "14.2.3",
