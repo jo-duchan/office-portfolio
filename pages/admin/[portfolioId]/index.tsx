@@ -1,39 +1,179 @@
 import React, { useEffect } from "react";
 import { GetStaticPropsContext, GetStaticPaths } from "next";
+import styled from "styled-components";
+import { useForm, type FieldValues } from "react-hook-form";
+import { useRouter } from "next/router";
+import PATH from "@/constants/path";
 import usePortfolioStore from "@/stores/portfolio-store";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/libs/firebase/firebase-config";
+import { type PortfolioItem } from "@/type/portfolio";
+import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
+import { getPresignedUrl, uploadImage } from "@/actions/img-upload-actions";
+import { convertImageUrl } from "@/utils/utils";
 
-export default function AdminPortfolioTopSectionEditPage() {
-  const { item, init } = usePortfolioStore((state) => state);
+interface UploadImageParams {
+  file: File;
+  key?: string;
+  preview?: string;
+}
+
+interface Props {
+  portfolioId: string;
+  portfolioData: PortfolioItem | null;
+}
+
+export default function AdminPortfolioHeadEditPage({
+  portfolioId,
+  portfolioData,
+}: Props) {
+  const router = useRouter();
+  const { item, init, updateHead } = usePortfolioStore((state) => state);
+  const { register, handleSubmit, watch, reset } = useForm<FieldValues>();
 
   useEffect(() => {
-    console.log(item);
-    // init() props로 받아서
+    // init
+    if (!item.id) {
+      router.replace(PATH.ADMIN);
+    }
+
+    if (portfolioData) {
+      const { title, description, keyword } = portfolioData.head;
+      init({ ...portfolioData });
+      reset({ title, description, keyword });
+    }
   }, []);
 
-  return <div>Admin Portfolio Head Edit Page</div>;
+  useEffect(() => {
+    const subscribe = watch((data: FieldValues, { name }) => {
+      if (name !== "pcImg" && name !== "mobileImg") {
+        updateHead({
+          ...item.head,
+          title: data.title,
+          description: data.description,
+          keyword: data.keyword,
+        });
+      }
+
+      if (name === "pcImg") {
+        updateHead({
+          ...item.head,
+          pcImg: {
+            key: item.head.pcImg?.key,
+            url: URL.createObjectURL(data.pcImg[0]),
+            file: data.pcImg[0],
+          },
+        });
+      }
+
+      if (name === "mobileImg") {
+        updateHead({
+          ...item.head,
+          mobileImg: {
+            key: item.head.mobileImg?.key,
+            url: URL.createObjectURL(data.mobileImg[0]),
+            file: data.mobileImg[0],
+          },
+        });
+      }
+    });
+
+    return () => subscribe.unsubscribe();
+  }, [watch, item]);
+
+  const handleUploadImage = async ({
+    file,
+    key,
+    preview,
+  }: UploadImageParams) => {
+    let url;
+    const response = await getPresignedUrl(key);
+
+    if (response) {
+      const uploadRes = await uploadImage({
+        url: response.url,
+        img: file,
+      });
+
+      url = convertImageUrl(uploadRes?.url);
+      preview && URL.revokeObjectURL(preview);
+    }
+
+    return { key: key ?? response?.key, url };
+  };
+
+  const handleUpdateHeadData = async (data: FieldValues) => {
+    console.log(portfolioId, item, data);
+    // 여기서는 store에 key 저장, url 업데이트, file 삭제 따로 하고, body 쪽에서는 img component에서 data에 id값이 있으니깐 그거 받아서 처리하면 될듯
+    const imgObj = {
+      pcImg: item.head.pcImg,
+      mobileImg: item.head.mobileImg,
+    };
+
+    const result = Object.values(imgObj).map((value) => {
+      const { key, url, file } = value;
+
+      return file && handleUploadImage({ key, preview: url, file });
+    });
+
+    Promise.all(result).then((value) => {
+      if (value[0]) imgObj.pcImg = value[0];
+      if (value[1]) imgObj.mobileImg = value[1];
+
+      updateHead({
+        ...item.head,
+        ...imgObj,
+      });
+    });
+
+    await setPortfolio(item);
+    router.push(`${PATH.ADMIN}/${portfolioId}/content`);
+  };
+
+  return (
+    <div>
+      Admin Portfolio Head Edit Page
+      <div onClick={() => console.log("체크 데이터", item)}>체크데이터</div>
+      <div>
+        {item.head.pcImg?.url && <img src={item.head.pcImg.url} />}
+        {item.head.mobileImg?.url && <img src={item.head.mobileImg.url} />}
+      </div>
+      <Form onSubmit={handleSubmit(handleUpdateHeadData)}>
+        <input type="file" {...register("pcImg")} />
+        <input type="file" {...register("mobileImg")} />
+        <input type="text" {...register("title")} />
+        <input type="text" {...register("description")} />
+        <input type="text" {...register("keyword")} />
+        <button>update</button>
+      </Form>
+    </div>
+  );
 }
 
 export const getStaticPaths = (async () => {
-  //유저에서는 서버에서 <프로젝트명, uuid>로 이루어진 리스트 조회 유효한 path값인지 받아오기
   return {
     paths: [],
-    fallback: "blocking", // false or "blocking"
+    fallback: "blocking",
   };
 }) satisfies GetStaticPaths;
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
-  // 서버에서 포트폴리오 존재 유무 체크(생성인지 수정인지 체크)
-  // console.log(context.params);
-  const docSnap = await getDoc(
-    doc(db, "portfolio", "bcceae8d-6def-434c-82be-4f24ea9d9698")
-  );
-  console.log(docSnap.data());
+  const { params } = context;
+  const portfolioId = (params?.portfolioId || "") as string;
+
+  // DB에서 포트폴리오 존재 유무 체크
+  const portfolioData = await getPortfolio(portfolioId);
 
   return {
     props: {
-      // data: docSnap.data(),
+      portfolioId,
+      portfolioData: portfolioData || null,
     },
   };
 };
+
+const Form = styled.form`
+  margin-top: 50px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
