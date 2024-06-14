@@ -1,5 +1,5 @@
 import React from "react";
-import { type PortfolioElement } from "@/stores/portfolio-store";
+import { type PortfolioElement } from "@/type/portfolio";
 import { HeadingElement, TextElement } from "@/components/element/TextElement";
 
 interface Props {

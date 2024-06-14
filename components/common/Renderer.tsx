@@ -1,10 +1,10 @@
 import * as ReactDOMServer from "react-dom/server";
-import { type PortfolioItem } from "@/stores/portfolio-store";
+import { type PortfolioElement } from "@/type/portfolio";
 import { HeadingElement, TextElement } from "@/components/element/TextElement";
 import RenderItem from "./RenderItem";
 
 interface Props {
-  data: PortfolioItem;
+  data: PortfolioElement[];
   editable: boolean;
 }
 
@@ -12,7 +12,7 @@ function Renderer({ data, editable }: Props) {
   return (
     <>
       {/* {data.head} */}
-      {data.body?.map((element) => (
+      {data?.map((element) => (
         <RenderItem key={element.id} element={element} editable={editable} />
       ))}
     </>

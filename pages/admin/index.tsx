@@ -1,16 +1,15 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useRouter } from "next/router";
 import PATH from "@/constants/path";
 import { v4 as uuidv4 } from "uuid";
 import usePortfolioStore from "@/stores/portfolio-store";
+import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
 
 export default function AdminPortfolioListPage() {
   const router = useRouter();
-  const { create } = usePortfolioStore();
 
-  const handleCreatePortfolio = () => {
+  const handleCreatePortfolio = async () => {
     const id = uuidv4();
-    create(id);
     router.push(`${PATH.ADMIN}/${id}`);
   };
 

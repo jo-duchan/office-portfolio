@@ -2,8 +2,8 @@ import React from "react";
 import usePortfolioStore from "@/stores/portfolio-store";
 
 export default function AdminPortfolioBodyEditPage() {
-  const { item, init, updateHead } = usePortfolioStore((state) => state);
+  const {} = usePortfolioStore();
 
-  console.log("body", item);
+  // console.log("body", item);
   return <div>Admin Portfolio Content Section Edit Page</div>;
 }

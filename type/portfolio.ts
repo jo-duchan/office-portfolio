@@ -2,10 +2,11 @@ import { Image, TagName, ClassName } from "@/type/common";
 
 export interface PortfolioMetadata {
   thumbnail: Image;
-  name: string;
+  title: string;
   description: string;
   keyword: string[];
   publish: boolean;
+  order: number;
 }
 
 export interface PortfolioHead {
@@ -26,8 +27,7 @@ export interface PortfolioElement {
   };
 }
 
-export interface PortfolioItem {
-  id: string;
+export interface PortfolioState {
   metadata: PortfolioMetadata;
   head: PortfolioHead;
   body: PortfolioElement[];

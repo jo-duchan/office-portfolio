@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { convertImageUrl } from "@/utils/utils";
 
 export async function getPresignedUrl(key: string = uuidv4()) {
   try {
@@ -36,4 +37,32 @@ export async function uploadImage({ url, img }: UploadImageParams) {
   } catch (e) {
     console.error(e);
   }
+}
+
+interface HandleUploadImageParams {
+  file: File | null;
+  key?: string;
+  preview?: string;
+}
+
+export async function handleUploadImage({
+  file,
+  key,
+  preview,
+}: HandleUploadImageParams) {
+  if (!file) return;
+  let url: string = "";
+  const response = await getPresignedUrl(key);
+
+  if (response) {
+    const uploadRes = await uploadImage({
+      url: response.url,
+      img: file,
+    });
+
+    url = convertImageUrl(uploadRes?.url);
+    preview && URL.revokeObjectURL(preview);
+  }
+
+  return { key: response?.key, url };
 }

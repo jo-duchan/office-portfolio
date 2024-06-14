@@ -8,14 +8,15 @@ import Renderer from "@/components/common/Renderer";
 import usePortfolioStore from "@/stores/portfolio-store";
 import { v4 as uuidv4 } from "uuid";
 export default function Home() {
-  const { item, addElement, init } = usePortfolioStore((state) => state);
+  const { addElement } = usePortfolioStore();
+
   const handleAdd = () => {
     // 아이템 생성 예시
-
+    const id = uuidv4();
     addElement({
-      id: uuidv4(),
+      id,
       tagName: "h3",
-      className: { "font-size": "font-size-14" },
+      className: { fontSize: "font-size-14" },
       content: {
         text: "안녕하세요.",
       },
@@ -29,9 +30,8 @@ export default function Home() {
     // );
     // html을 저장하지말고, 전역상태 자체를 db에 저장후 db에서 유저로 내려줄때 서버사이드에서
     // ReactDOMServer.renderToStaticMarkup를 통해 html로 전환하자
-    console.log(item);
-
-    await setDoc(doc(db, "portfolio", uuidv4()), { ...item });
+    const id = uuidv4();
+    // await setDoc(doc(db, "portfolio", id), { ...item });
   };
   return (
     <div>
@@ -44,7 +44,7 @@ export default function Home() {
           __html: Renderer({ data: item, editable: true }),
         }}
       ></div> */}
-      <Renderer data={item} editable={true} />
+      {/* <Renderer data={item} editable={true} /> */}
     </div>
   );
 }

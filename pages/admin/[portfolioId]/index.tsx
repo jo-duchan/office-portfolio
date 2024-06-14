@@ -5,20 +5,16 @@ import { useForm, type FieldValues } from "react-hook-form";
 import { useRouter } from "next/router";
 import PATH from "@/constants/path";
 import usePortfolioStore from "@/stores/portfolio-store";
-import { type PortfolioItem } from "@/type/portfolio";
+import { useShallow } from "zustand/react/shallow";
 import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
-import { getPresignedUrl, uploadImage } from "@/actions/img-upload-actions";
-import { convertImageUrl } from "@/utils/utils";
-
-interface UploadImageParams {
-  file: File;
-  key?: string;
-  preview?: string;
-}
+import { checkImageFileSize } from "@/utils/utils";
+import { handleUploadImage } from "@/actions/img-upload-actions";
+import { PortfolioHead, PortfolioState } from "@/type/portfolio";
+import { Image } from "@/type/common";
 
 interface Props {
   portfolioId: string;
-  portfolioData: PortfolioItem | null;
+  portfolioData: PortfolioState | null;
 }
 
 export default function AdminPortfolioHeadEditPage({
@@ -26,27 +22,33 @@ export default function AdminPortfolioHeadEditPage({
   portfolioData,
 }: Props) {
   const router = useRouter();
-  const { item, init, updateHead } = usePortfolioStore((state) => state);
   const { register, handleSubmit, watch, reset } = useForm<FieldValues>();
+  const { head, setHead } = usePortfolioStore(
+    useShallow((state) => ({
+      head: state.head,
+      setHead: state.setHead,
+    }))
+  );
 
   useEffect(() => {
     // init
-    if (!item.id) {
-      router.replace(PATH.ADMIN);
-    }
-
     if (portfolioData) {
       const { title, description, keyword } = portfolioData.head;
-      init({ ...portfolioData });
+
+      setHead({ ...portfolioData.head });
       reset({ title, description, keyword });
+      return;
     }
+
+    setHead({} as PortfolioHead);
+    reset();
   }, []);
 
   useEffect(() => {
     const subscribe = watch((data: FieldValues, { name }) => {
       if (name !== "pcImg" && name !== "mobileImg") {
-        updateHead({
-          ...item.head,
+        setHead({
+          ...head,
           title: data.title,
           description: data.description,
           keyword: data.keyword,
@@ -54,10 +56,11 @@ export default function AdminPortfolioHeadEditPage({
       }
 
       if (name === "pcImg") {
-        updateHead({
-          ...item.head,
+        if (!checkImageFileSize(data.pcImg[0]?.size)) return;
+        setHead({
+          ...head,
           pcImg: {
-            key: item.head.pcImg?.key,
+            key: head.pcImg?.key,
             url: URL.createObjectURL(data.pcImg[0]),
             file: data.pcImg[0],
           },
@@ -65,10 +68,11 @@ export default function AdminPortfolioHeadEditPage({
       }
 
       if (name === "mobileImg") {
-        updateHead({
-          ...item.head,
+        if (!checkImageFileSize(data.mobileImg[0]?.size)) return;
+        setHead({
+          ...head,
           mobileImg: {
-            key: item.head.mobileImg?.key,
+            key: head.mobileImg?.key,
             url: URL.createObjectURL(data.mobileImg[0]),
             file: data.mobileImg[0],
           },
@@ -77,66 +81,61 @@ export default function AdminPortfolioHeadEditPage({
     });
 
     return () => subscribe.unsubscribe();
-  }, [watch, item]);
+  }, [watch, head]);
 
-  const handleUploadImage = async ({
-    file,
-    key,
-    preview,
-  }: UploadImageParams) => {
-    let url;
-    const response = await getPresignedUrl(key);
-
-    if (response) {
-      const uploadRes = await uploadImage({
-        url: response.url,
-        img: file,
-      });
-
-      url = convertImageUrl(uploadRes?.url);
-      preview && URL.revokeObjectURL(preview);
+  const handlesetHeadData = async (data: FieldValues) => {
+    const { title, description, keyword, pcImg, mobileImg } = head;
+    if (!title || !description || !keyword || !pcImg.url || !mobileImg.url) {
+      window.alert("내용을 입력하세요.");
+      return;
     }
-
-    return { key: key ?? response?.key, url };
-  };
-
-  const handleUpdateHeadData = async (data: FieldValues) => {
-    console.log(portfolioId, item, data);
     // 여기서는 store에 key 저장, url 업데이트, file 삭제 따로 하고, body 쪽에서는 img component에서 data에 id값이 있으니깐 그거 받아서 처리하면 될듯
-    const imgObj = {
-      pcImg: item.head.pcImg,
-      mobileImg: item.head.mobileImg,
+    const imgObj: { [key: string]: Image } = {
+      pcImg: head.pcImg,
+      mobileImg: head.mobileImg,
     };
 
-    const result = Object.values(imgObj).map((value) => {
+    const response = Object.entries(imgObj).map(async ([objKey, value]) => {
       const { key, url, file } = value;
 
-      return file && handleUploadImage({ key, preview: url, file });
+      const result = await handleUploadImage({ key, preview: url, file });
+
+      if (result) {
+        imgObj[objKey] = { key: result.key, url: result.url, file: null };
+      }
     });
 
-    Promise.all(result).then((value) => {
-      if (value[0]) imgObj.pcImg = value[0];
-      if (value[1]) imgObj.mobileImg = value[1];
+    await Promise.all(response).then(async () => {
+      console.log(head, imgObj);
 
-      updateHead({
-        ...item.head,
+      setHead({
+        ...head,
         ...imgObj,
       });
-    });
 
-    await setPortfolio(item);
-    router.push(`${PATH.ADMIN}/${portfolioId}/content`);
+      await setPortfolio({
+        id: portfolioId,
+        data: {
+          head: {
+            ...head,
+            ...imgObj,
+          },
+        },
+      });
+
+      router.push(`${PATH.ADMIN}/${portfolioId}/content`);
+    });
   };
 
   return (
-    <div>
+    <Container>
       Admin Portfolio Head Edit Page
-      <div onClick={() => console.log("체크 데이터", item)}>체크데이터</div>
+      <div onClick={() => console.log("체크 데이터", head)}>체크데이터</div>
       <div>
-        {item.head.pcImg?.url && <img src={item.head.pcImg.url} />}
-        {item.head.mobileImg?.url && <img src={item.head.mobileImg.url} />}
+        {head.pcImg?.url && <img src={head.pcImg.url} />}
+        {head.mobileImg?.url && <img src={head.mobileImg.url} />}
       </div>
-      <Form onSubmit={handleSubmit(handleUpdateHeadData)}>
+      <Form onSubmit={handleSubmit(handlesetHeadData)}>
         <input type="file" {...register("pcImg")} />
         <input type="file" {...register("mobileImg")} />
         <input type="text" {...register("title")} />
@@ -144,7 +143,7 @@ export default function AdminPortfolioHeadEditPage({
         <input type="text" {...register("keyword")} />
         <button>update</button>
       </Form>
-    </div>
+    </Container>
   );
 }
 
@@ -158,8 +157,6 @@ export const getStaticPaths = (async () => {
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   const { params } = context;
   const portfolioId = (params?.portfolioId || "") as string;
-
-  // DB에서 포트폴리오 존재 유무 체크
   const portfolioData = await getPortfolio(portfolioId);
 
   return {
@@ -169,6 +166,12 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     },
   };
 };
+
+const Container = styled.div`
+  & img {
+    width: 150px;
+  }
+`;
 
 const Form = styled.form`
   margin-top: 50px;

@@ -7,8 +7,6 @@ import {
   setDoc,
   addDoc,
 } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
-import { PortfolioItem } from "@/type/portfolio";
 
 // Get List
 export async function getPortfolioList(id: string) {
@@ -37,12 +35,14 @@ export async function getPortfolio(id: string) {
   }
 }
 
+interface SetParams {
+  id: string;
+  data: Object;
+}
 // Set
-export async function setPortfolio(data: PortfolioItem) {
+export async function setPortfolio({ id, data }: SetParams) {
   try {
-    const id = uuidv4();
-    const ref = doc(db, "portfolio", id);
-    await setDoc(ref, { ...data, id });
+    await setDoc(doc(db, "portfolio", id), data);
   } catch (error) {
     console.error("Failed to set portfolio", error);
   }
