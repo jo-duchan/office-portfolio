@@ -1,17 +1,19 @@
 import React from "react";
-import { type PortfolioElement } from "@/type/portfolio";
+import useCurrentElementStore from "@/stores/current-element-store";
 import { HeadingElement, TextElement } from "@/components/element/TextElement";
 import ImageElement from "@/components/element/ImageElement";
-
+import { type PortfolioElement } from "@/type/portfolio";
 interface Props {
   element: PortfolioElement;
   editable: boolean;
 }
 
 function RenderItem({ element, editable }: Props) {
+  const setCurrentId = useCurrentElementStore((state) => state.setCurrentId);
+
   const handleSelectItem = () => {
     // select item
-    console.log(element.id);
+    setCurrentId(element.id);
   };
 
   const renderElement = () => {
