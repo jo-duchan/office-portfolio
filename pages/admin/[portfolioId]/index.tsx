@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { GetStaticPropsContext, GetStaticPaths } from "next";
+import { GetStaticPaths, GetStaticPropsContext } from "next";
 import styled from "styled-components";
 import { useForm, type FieldValues } from "react-hook-form";
 import { useRouter } from "next/router";
@@ -9,17 +9,17 @@ import { useShallow } from "zustand/react/shallow";
 import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
 import { checkImageFileSize } from "@/utils/utils";
 import { handleUploadImage } from "@/actions/img-upload-actions";
-import { PortfolioHead, PortfolioState } from "@/type/portfolio";
+import { PortfolioHead } from "@/type/portfolio";
 import { Image } from "@/type/common";
 
 interface Props {
   portfolioId: string;
-  portfolioData: PortfolioState | null;
+  portfolioHeadData: PortfolioHead | null;
 }
 
 export default function AdminPortfolioHeadEditPage({
   portfolioId,
-  portfolioData,
+  portfolioHeadData,
 }: Props) {
   const router = useRouter();
   const { register, handleSubmit, watch, reset } = useForm<FieldValues>();
@@ -32,10 +32,11 @@ export default function AdminPortfolioHeadEditPage({
 
   useEffect(() => {
     // init
-    if (portfolioData) {
-      const { title, description, keyword } = portfolioData.head;
+    console.log(portfolioHeadData);
+    if (portfolioHeadData) {
+      const { title, description, keyword } = portfolioHeadData;
 
-      setHead({ ...portfolioData.head });
+      setHead({ ...portfolioHeadData });
       reset({ title, description, keyword });
       return;
     }
@@ -123,7 +124,7 @@ export default function AdminPortfolioHeadEditPage({
         },
       });
 
-      router.push(`${PATH.ADMIN}/${portfolioId}/content`);
+      router.push(`${PATH.ADMIN}/${portfolioId}/body`);
     });
   };
 
@@ -156,13 +157,14 @@ export const getStaticPaths = (async () => {
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   const { params } = context;
-  const portfolioId = (params?.portfolioId || "") as string;
+  const portfolioId = params?.portfolioId as string;
   const portfolioData = await getPortfolio(portfolioId);
+  console.log(portfolioId, portfolioData);
 
   return {
     props: {
       portfolioId,
-      portfolioData: portfolioData || null,
+      portfolioHeadData: portfolioData?.head || null,
     },
   };
 };

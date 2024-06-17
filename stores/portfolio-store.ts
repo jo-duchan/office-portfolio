@@ -10,9 +10,9 @@ import {
 export interface PortfolioAction {
   setMetadate: (metadata: PortfolioMetadata) => void;
   setHead: (head: PortfolioHead) => void;
-  addElement: (element: PortfolioElement) => void;
-  removeElement: () => void;
-  updateElement: () => void;
+  addElement: (element: PortfolioElement, currentId?: string) => void;
+  updateElement: (element: PortfolioElement, currentId: string) => void;
+  removeElement: (currentId: string) => void;
   reset: () => void;
 }
 
@@ -33,9 +33,31 @@ const usePortfolioStore = create<PortfolioState & PortfolioAction>()(
       set((state) => {
         state.head = head;
       }),
-    addElement: () => set({}),
-    removeElement: () => set({}),
-    updateElement: () => set({}),
+    addElement: (element, currentId) =>
+      set((state) => {
+        let startPoint = state.body.length;
+
+        if (currentId) {
+          const selectIndex = state.body.findIndex(
+            ({ id }) => id === currentId
+          );
+          startPoint = selectIndex + 1;
+        }
+
+        state.body.splice(startPoint, 0, element);
+      }),
+    updateElement: (element, currentId) =>
+      set((state) => {
+        const selectIndex = state.body.findIndex(({ id }) => id === currentId);
+
+        state.body[selectIndex] = element;
+      }),
+    removeElement: (currentId) =>
+      set((state) => {
+        const selectIndex = state.body.findIndex(({ id }) => id === currentId);
+
+        state.body.splice(selectIndex, 1);
+      }),
     reset: () => set(defaultState),
   }))
 );

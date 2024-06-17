@@ -1,6 +1,7 @@
 import React from "react";
 import { type PortfolioElement } from "@/type/portfolio";
 import { HeadingElement, TextElement } from "@/components/element/TextElement";
+import ImageElement from "@/components/element/ImageElement";
 
 interface Props {
   element: PortfolioElement;
@@ -20,6 +21,10 @@ function RenderItem({ element, editable }: Props) {
 
     if (element.tagName === "p") {
       return <TextElement data={element} editable={editable} />;
+    }
+
+    if (element.tagName === "img") {
+      return <ImageElement data={element} />;
     }
   };
   return <div onClick={handleSelectItem}>{renderElement()}</div>;
