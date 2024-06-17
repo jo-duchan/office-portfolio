@@ -1,6 +1,9 @@
+import { useState } from "react";
 import type { AppProps, AppContext } from "next/app";
 import Header from "@/components/common/Header";
 import { SESSION_COOKIE_NAME } from "@/constants/cookies";
+import { ThemeProvider } from "styled-components";
+import useThemeStore from "@/stores/theme-store";
 import GlobalStyle from "@/styles/globals";
 
 interface MyAppProps extends AppProps {
@@ -12,12 +15,13 @@ export default function App({
   pageProps,
   sessionCookie,
 }: MyAppProps) {
+  const theme = useThemeStore((state) => state.theme);
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Header sessionCookie={sessionCookie || null} />
       <Component {...pageProps} />
-    </>
+    </ThemeProvider>
   );
 }
 

@@ -5,7 +5,7 @@ import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
 import usePortfolioStore from "@/stores/portfolio-store";
 import { useShallow } from "zustand/react/shallow";
 import { v4 as uuidv4 } from "uuid";
-
+import useThemeStore from "@/stores/theme-store";
 import Renderer from "@/components/common/Renderer";
 import { PortfolioState, PortfolioElement } from "@/type/portfolio";
 import { Image } from "@/type/common";
@@ -22,6 +22,7 @@ export default function AdminPortfolioBodyEditPage({
   const { body, addElement } = usePortfolioStore(
     useShallow((state) => ({ body: state.body, addElement: state.addElement }))
   );
+  const updateMediaQuery = useThemeStore((state) => state.updateMediaQuery);
 
   useEffect(() => {
     // init
@@ -79,6 +80,13 @@ export default function AdminPortfolioBodyEditPage({
         <button onClick={() => console.log(body)}>check data</button>
         <button onClick={handleAddTextElement}>text add</button>
         <button onClick={handleAddImageElement}>img add</button>
+        <button
+          onClick={() => {
+            updateMediaQuery("small");
+          }}
+        >
+          theme change
+        </button>
       </div>
       <div>
         <Renderer head={portfolioData?.head!} body={body} editable={true} />
