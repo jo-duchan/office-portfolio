@@ -18,7 +18,7 @@ const label1 = {
     font-size: 14px;
     font-weight: 500;
     line-height: normal;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -32,13 +32,13 @@ const label2 = {
     font-size: 12px;
     font-weight: 500;
     line-height: normal;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 12px;
     font-weight: 400;
     line-height: normal;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -47,13 +47,13 @@ const body1 = {
     font-size: 18px;
     font-weight: 500;
     line-height: 130%;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 18px;
     font-weight: 400;
     line-height: 130%;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -62,13 +62,13 @@ const body2 = {
     font-size: 16px;
     font-weight: 500;
     line-height: 130%;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 16px;
     font-weight: 400;
     line-height: 130%;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -77,13 +77,13 @@ const body3 = {
     font-size: 14px;
     font-weight: 500;
     line-height: 130%;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 14px;
     font-weight: 400;
     line-height: 130%;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -92,13 +92,13 @@ const body4 = {
     font-size: 12px;
     font-weight: 500;
     line-height: 130%;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 12px;
     font-weight: 400;
     line-height: 130%;
-    letter-spacing: -0.5%;
+    /* letter-spacing: -0.005em; */
   `,
 };
 
