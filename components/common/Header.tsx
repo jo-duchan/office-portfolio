@@ -71,6 +71,9 @@ function Header({ sessionCookie }: Props) {
 export default Header;
 
 const Container = styled.header`
+  position: fixed;
+  top: 0px;
+  left: 0px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -94,6 +97,12 @@ const MenuItem = styled.div`
   ${textStyles.body3.regular};
   cursor: pointer;
   user-select: none;
+  transition: 200ms ease-in-out;
+  transition-property: color;
+
+  &:active {
+    color: ${colors.neutral[300]};
+  }
 `;
 
 const Divider = styled.div`

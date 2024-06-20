@@ -13,8 +13,13 @@ const GlobalStyle = createGlobalStyle`
         height: 100%;
     }
 
-    body {
+    #__next {
+        padding-top: 52px;
+    }
+
+    body * {
         font-family: ${fontFamily};
+        box-sizing: border-box;
     }
 `;
 
