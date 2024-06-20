@@ -1,23 +1,36 @@
 import React, { useCallback, useEffect } from "react";
-import { useRouter } from "next/router";
-import PATH from "@/constants/path";
-import { v4 as uuidv4 } from "uuid";
-import usePortfolioStore from "@/stores/portfolio-store";
-import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
+import Head from "next/head";
+import styled from "styled-components";
+import { colors } from "@/styles/primitive-tokens";
+import HomeActions from "@/components/admin/home/HomeActions";
+// import Modal from "@/components/common/Modal";
 
 export default function AdminPortfolioListPage() {
-  const router = useRouter();
-
-  const handleCreatePortfolio = async () => {
-    const id = uuidv4();
-    router.push(`${PATH.ADMIN}/${id}`);
-  };
-
   return (
-    <div>
-      Admin Portfolio List<button onClick={handleCreatePortfolio}>new</button>
-      {/* 비밀번호 재설정 이메일 보내기 참고: https://firebase.google.com/docs/auth/web/manage-users?hl=ko#send_a_password_reset_email */}
-      {/* list = edit / delete / publish 여부 */}
-    </div>
+    <>
+      <Head>
+        <title>Admin Home</title>
+      </Head>
+      <Container>
+        <Wrapper>
+          <HomeActions />
+          {/* portfolio */}
+        </Wrapper>
+      </Container>
+    </>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: ${colors.neutral[50]};
+`;
+
+const Wrapper = styled.div`
+  max-width: 1200px;
+  width: 100%;
+`;
