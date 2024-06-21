@@ -8,13 +8,13 @@ type ButtonSize = "medium" | "small";
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
   size: ButtonSize;
-  action: () => void;
+  action?: () => void;
 }
 
 interface BaseProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   size?: ButtonSize;
-  action: () => void;
+  action?: () => void;
   color: string;
   bgColor: string;
   activeBgColor: string;
