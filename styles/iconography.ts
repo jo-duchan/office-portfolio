@@ -6,6 +6,7 @@ import AddImage from "@/public/assets/icon/icon-add-image.svg";
 import RemoveImage from "@/public/assets/icon/icon-remove-image.svg";
 import Add from "@/public/assets/icon/icon-add.svg";
 import Close from "@/public/assets/icon/icon-close.svg";
+import CloseSmall from "@/public/assets/icon/icon-close-smal.svg";
 import More from "@/public/assets/icon/icon-more.svg";
 import DropDown from "@/public/assets/icon/icon-drop-down.svg";
 import AlignCenter from "@/public/assets/icon/icon-align-center.svg";
@@ -21,6 +22,7 @@ const Icons = {
   removeImage: RemoveImage,
   add: Add,
   close: Close,
+  closeSmall: CloseSmall,
   more: More,
   dropdown: DropDown,
   alignCenter: AlignCenter,
