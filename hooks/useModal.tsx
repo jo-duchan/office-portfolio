@@ -3,7 +3,9 @@ import { createPortal } from "react-dom";
 import Modal, { SubmitAction } from "@/components/common/Modal";
 
 interface ModalParams {
+  title: string;
   children: React.ReactNode;
+  actionLabel: string;
   action: SubmitAction;
 }
 
@@ -23,7 +25,12 @@ function useModal() {
   const modal = () => {
     if (isModal) {
       return createPortal(
-        <Modal onHideModal={hideModal} action={params.action}>
+        <Modal
+          title={params.title}
+          onHideModal={hideModal}
+          action={params.action}
+          actionLabel={params.actionLabel}
+        >
           {params.children}
         </Modal>,
         portal

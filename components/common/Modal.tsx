@@ -9,17 +9,25 @@ export type SubmitAction = (
 ) => Promise<void>;
 
 export interface ModalProps {
+  title: string;
   children: React.ReactNode;
   onHideModal: () => void;
+  actionLabel: string;
   action: SubmitAction;
 }
 
-function Modal({ children, onHideModal, action }: ModalProps) {
+function Modal({
+  title,
+  children,
+  onHideModal,
+  actionLabel,
+  action,
+}: ModalProps) {
   return (
     <Container>
       <ModalSection onSubmit={action}>
         <ModalHeadSection>
-          <Title>New Collection (1/2)</Title>
+          <Title>{title}</Title>
           <Close onClick={onHideModal}>
             <Icons.close />
           </Close>
@@ -27,7 +35,7 @@ function Modal({ children, onHideModal, action }: ModalProps) {
         <ModalBodySection>{children}</ModalBodySection>
         <ModalfootSection>
           <Button.Neutral label="Cancel" size="medium" action={onHideModal} />
-          <Button.Primary label="Next" size="medium" type="submit" />
+          <Button.Primary label={actionLabel} size="medium" type="submit" />
         </ModalfootSection>
       </ModalSection>
       <Dim onClick={onHideModal} />
@@ -114,6 +122,7 @@ const ModalBodySection = styled.div`
   flex: 1;
   gap: 16px;
   padding-block: 24px;
+  overflow: hidden auto;
 `;
 
 const ModalfootSection = styled.div`

@@ -23,7 +23,7 @@ function TextArea({ label, register, name, placeholder, height }: Props) {
         id={name}
         {...register(name)}
         placeholder={placeholder}
-        $height={height ?? 90}
+        $height={height ?? 80}
       />
     </Container>
   );
