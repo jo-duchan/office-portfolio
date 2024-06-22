@@ -28,13 +28,18 @@ function Modal({
       <ModalSection onSubmit={action}>
         <ModalHeadSection>
           <Title>{title}</Title>
-          <Close onClick={onHideModal}>
+          <Close onClick={onHideModal} type="button">
             <Icons.close />
           </Close>
         </ModalHeadSection>
         <ModalBodySection>{children}</ModalBodySection>
         <ModalfootSection>
-          <Button.Neutral label="Cancel" size="medium" action={onHideModal} />
+          <Button.Neutral
+            label="Cancel"
+            size="medium"
+            action={onHideModal}
+            type="button"
+          />
           <Button.Primary label={actionLabel} size="medium" type="submit" />
         </ModalfootSection>
       </ModalSection>
