@@ -1,12 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import { useRouter } from "next/router";
-import PATH from "@/constants/path";
-import { v4 as uuidv4 } from "uuid";
-import usePortfolioStore from "@/stores/portfolio-store";
-import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
 import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
+
+interface Props {
+  onInvokeCollectionModal: (id?: string) => Promise<void>;
+}
 
 interface StyledProps {
   $bgColor: string;
@@ -14,18 +13,10 @@ interface StyledProps {
   $activeColor: string;
 }
 
-export default function HomeActions() {
-  const router = useRouter();
-
-  // useModal custom hook 구현 필요
-  // const handleCreatePortfolio = async () => {
-  //   const id = uuidv4();
-  //   router.push(`${PATH.ADMIN}/${id}`);
-  // };
-
+export default function HomeActions({ onInvokeCollectionModal }: Props) {
   const handleVisualAssetsUpdate = () => {};
-  const handleCreateCollection = () => {};
   const handleAccountPasswordUpdate = () => {};
+
   return (
     <Container>
       <ActionItem
@@ -37,7 +28,7 @@ export default function HomeActions() {
         Visual Assets Update
       </ActionItem>
       <ActionItem
-        onClick={handleCreateCollection}
+        onClick={() => onInvokeCollectionModal()}
         $bgColor={colors.secondary[50]}
         $color={colors.secondary[500]}
         $activeColor={colors.secondary[100]}

@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import usePortfolioStore from "@/stores/portfolio-store";
 import { useShallow } from "zustand/react/shallow";
-import { type PortfolioElement } from "@/type/portfolio";
+import { type PortfolioElement } from "@/type/collection";
 
 interface BaseProps extends ElementProps {
   tagName: "h3" | "p";
@@ -30,17 +30,15 @@ function TextBase({ data, editable, tagName }: BaseProps) {
     );
   };
   return (
-    <div>
-      <ContentEditable
-        className={Object.values(data.className).join(" ")}
-        html={text.current}
-        innerRef={inner}
-        disabled={!editable}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        tagName={tagName}
-      />
-    </div>
+    <ContentEditable
+      className={Object.values(data.className).join(" ")}
+      html={text.current}
+      innerRef={inner}
+      disabled={!editable}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      tagName={tagName}
+    />
   );
 }
 

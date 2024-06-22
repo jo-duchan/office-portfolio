@@ -8,7 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 import { v4 as uuidv4 } from "uuid";
 import useThemeStore from "@/stores/theme-store";
 import Renderer from "@/components/common/Renderer";
-import { PortfolioState, PortfolioElement } from "@/type/portfolio";
+import { PortfolioState, PortfolioElement } from "@/type/collection";
 import { Image } from "@/type/common";
 import Editor from "@/components/admin/Editor";
 
@@ -18,7 +18,7 @@ interface Props {
 }
 let num = 0;
 
-export default function AdminPortfolioBodyEditPage({
+export default function AdminCollectionEditPage({
   portfolioId,
   portfolioData,
 }: Props) {

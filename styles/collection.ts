@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 
-const portfolioStyle = css`
+const collectionStyle = css`
   ${(props) => (props.theme.mediaQuery === "small" ? smallStyle : largeStyle)}
 `;
 
@@ -14,6 +14,14 @@ const largeStyle = css`
   .font-size-14 {
     color: goldenrod;
   }
+
+  .margin-top-24 {
+    margin-top: 24px;
+  }
+
+  .margin-btm-24 {
+    margin-bottom: 24px;
+  }
 `;
 
-export default portfolioStyle;
+export default collectionStyle;

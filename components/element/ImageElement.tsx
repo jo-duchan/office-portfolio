@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useWatch, useForm, type FieldValues } from "react-hook-form";
 import usePortfolioStore from "@/stores/portfolio-store";
 import { useShallow } from "zustand/react/shallow";
-import { PortfolioElement } from "@/type/portfolio";
+import { PortfolioElement } from "@/type/collection";
 import { Image } from "@/type/common";
 
 interface BaseProps {

@@ -3,7 +3,7 @@ import { useForm, type FieldValues } from "react-hook-form";
 import usePortfolioStore from "@/stores/portfolio-store";
 import useCurrentElementStore from "@/stores/current-element-store";
 import { useShallow } from "zustand/react/shallow";
-import { PortfolioElement } from "@/type/portfolio";
+import { PortfolioElement } from "@/type/collection";
 
 type HashMap = Map<string, PortfolioElement>;
 
@@ -37,7 +37,9 @@ function Editor() {
 
   useEffect(() => {
     const subscribe = watch((data: FieldValues, { name }) => {
-      if (currentItem && currentId) {
+      if (!currentItem || !currentId) return;
+
+      if (name === "margin") {
         updateElement(
           {
             ...currentItem,

@@ -1,12 +1,12 @@
 import { createGlobalStyle } from "styled-components";
 import { reset } from "styled-reset";
-import portfolioStyle from "@/styles/portfolio";
+import collectionStyle from "@/styles/collection";
 
 const fontFamily = `"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif`;
 
 const GlobalStyle = createGlobalStyle`
     ${reset};
-    ${portfolioStyle};
+    ${collectionStyle};
 
     html, body, #__next {
         width: 100%;

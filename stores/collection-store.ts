@@ -1,38 +1,21 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import {
-  PortfolioState,
-  PortfolioMetadata,
-  PortfolioHead,
-  PortfolioElement,
-} from "@/type/portfolio";
+import { CollectionState, CollectionElement } from "@/type/collection";
 
-export interface PortfolioAction {
-  setMetadate: (metadata: PortfolioMetadata) => void;
-  setHead: (head: PortfolioHead) => void;
-  addElement: (element: PortfolioElement, currentId?: string) => void;
-  updateElement: (element: PortfolioElement, currentId: string) => void;
+export interface CollectionAction {
+  addElement: (element: CollectionElement, currentId?: string) => void;
+  updateElement: (element: CollectionElement, currentId: string) => void;
   removeElement: (currentId: string) => void;
   reset: () => void;
 }
 
-const defaultState: PortfolioState = {
-  metadata: {} as PortfolioMetadata,
-  head: {} as PortfolioHead,
-  body: [] as PortfolioElement[],
+const defaultState: CollectionState = {
+  body: [] as CollectionElement[],
 };
 
-const usePortfolioStore = create<PortfolioState & PortfolioAction>()(
+const useCollectionStore = create<CollectionState & CollectionAction>()(
   immer((set) => ({
     ...defaultState,
-    setMetadate: (metadata) =>
-      set((state) => {
-        state.metadata = metadata;
-      }),
-    setHead: (head) =>
-      set((state) => {
-        state.head = head;
-      }),
     addElement: (element, currentId) =>
       set((state) => {
         let startPoint = state.body.length;
@@ -62,4 +45,4 @@ const usePortfolioStore = create<PortfolioState & PortfolioAction>()(
   }))
 );
 
-export default usePortfolioStore;
+export default useCollectionStore;

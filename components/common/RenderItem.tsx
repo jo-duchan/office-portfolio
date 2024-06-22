@@ -2,7 +2,7 @@ import React from "react";
 import useCurrentElementStore from "@/stores/current-element-store";
 import { HeadingElement, TextElement } from "@/components/element/TextElement";
 import ImageElement from "@/components/element/ImageElement";
-import { type PortfolioElement } from "@/type/portfolio";
+import { type PortfolioElement } from "@/type/collection";
 interface Props {
   element: PortfolioElement;
   editable: boolean;

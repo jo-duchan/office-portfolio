@@ -10,7 +10,9 @@ import {
 import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
 import Icons from "@/styles/iconography";
+import { checkImageFileSize } from "@/utils/utils";
 import Visibility from "@/components/common/Visibility";
+import { Image } from "@/type/common";
 
 export interface ImageGropItem {
   name: string;
@@ -21,7 +23,7 @@ export interface ImageGropItem {
 interface ItemProps {
   register: UseFormRegister<FieldValues>;
   control: Control<FieldValues>;
-  item: ImageGropItem;
+  item: [string, Image];
   setValue: UseFormSetValue<FieldValues>;
 }
 
@@ -29,17 +31,18 @@ function ImageItem({ register, control, item, setValue }: ItemProps) {
   const [url, setUrl] = useState<string>();
   const itemData = useWatch({
     control: control,
-    name: item.name,
+    name: item[0],
   });
 
   useEffect(() => {
     // init
 
-    item.url && setUrl(item.url);
+    item[1].url && setUrl(item[1].url);
   }, []);
 
   useEffect(() => {
     if (itemData !== undefined && itemData[0] !== undefined) {
+      if (!checkImageFileSize(itemData[0]?.size)) return;
       url && URL.revokeObjectURL(url);
       setUrl(URL.createObjectURL(itemData[0]));
     }
@@ -50,7 +53,7 @@ function ImageItem({ register, control, item, setValue }: ItemProps) {
   }, [itemData]);
 
   const handleRemoveImage = () => {
-    setValue(item.name, {});
+    setValue(item[0], {});
     setUrl(undefined);
   };
 
@@ -67,10 +70,10 @@ function ImageItem({ register, control, item, setValue }: ItemProps) {
       <Visibility visible={url === undefined}>
         <ItemInputBtn>
           <Icons.addImage />
-          <input {...register(item.name)} type="file" />
+          <input {...register(item[0])} type="file" />
         </ItemInputBtn>
       </Visibility>
-      <ItemLebel>{item.name}</ItemLebel>
+      <ItemLebel>{item[0]}</ItemLebel>
     </Item>
   );
 }
@@ -79,7 +82,7 @@ interface GroupProps {
   label: string;
   register: UseFormRegister<FieldValues>;
   control: Control<FieldValues>;
-  items: ImageGropItem[];
+  items: [string, Image][];
   setValue: UseFormSetValue<FieldValues>;
 }
 
@@ -90,7 +93,7 @@ function ImageGroup({ label, items, register, control, setValue }: GroupProps) {
       <List>
         {items.map((item, index) => (
           <ImageItem
-            key={item.name}
+            key={item[0]}
             register={register}
             control={control}
             item={item}
