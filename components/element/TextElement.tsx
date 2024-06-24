@@ -1,17 +1,17 @@
 import React, { useRef } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
-import usePortfolioStore from "@/stores/portfolio-store";
+// import usePortfolioStore from "@/stores/portfolio-store";
 import { useShallow } from "zustand/react/shallow";
-import { type PortfolioElement } from "@/type/collection";
+// import { type PortfolioElement } from "@/type/collection";
 
 interface BaseProps extends ElementProps {
   tagName: "h3" | "p";
 }
 
 function TextBase({ data, editable, tagName }: BaseProps) {
-  const { updateElement } = usePortfolioStore(
-    useShallow((state) => ({ updateElement: state.updateElement }))
-  );
+  // const { updateElement } = usePortfolioStore(
+  //   useShallow((state) => ({ updateElement: state.updateElement }))
+  // );
   const text = useRef<string>(data.content?.text || "");
   const inner = useRef<HTMLHeadingElement | HTMLParagraphElement>(null);
   const handleChange = (ev: ContentEditableEvent) => {
@@ -19,15 +19,15 @@ function TextBase({ data, editable, tagName }: BaseProps) {
   };
   const handleBlur = () => {
     // 여기서 직접 업데이트
-    updateElement(
-      {
-        ...data,
-        content: {
-          text: text.current,
-        },
-      },
-      data.id
-    );
+    // updateElement(
+    //   {
+    //     ...data,
+    //     content: {
+    //       text: text.current,
+    //     },
+    //   },
+    //   data.id
+    // );
   };
   return (
     <ContentEditable

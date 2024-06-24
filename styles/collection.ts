@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 
 const collectionStyle = css`
-  ${(props) => (props.theme.mediaQuery === "small" ? smallStyle : largeStyle)}
+  ${({ theme }) => (theme.mediaQuery === "small" ? smallStyle : largeStyle)}
 `;
 
 const smallStyle = css`

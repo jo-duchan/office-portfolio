@@ -1,8 +1,13 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { CollectionState, CollectionElement } from "@/type/collection";
+import {
+  CollectionState,
+  CollectionHead,
+  CollectionElement,
+} from "@/type/collection";
 
 export interface CollectionAction {
+  init: (data: CollectionState) => void;
   addElement: (element: CollectionElement, currentId?: string) => void;
   updateElement: (element: CollectionElement, currentId: string) => void;
   removeElement: (currentId: string) => void;
@@ -10,12 +15,18 @@ export interface CollectionAction {
 }
 
 const defaultState: CollectionState = {
+  head: {} as CollectionHead,
   body: [] as CollectionElement[],
 };
 
 const useCollectionStore = create<CollectionState & CollectionAction>()(
   immer((set) => ({
     ...defaultState,
+    init: (data) =>
+      set((state) => {
+        state.head = data.head;
+        state.body = data.body;
+      }),
     addElement: (element, currentId) =>
       set((state) => {
         let startPoint = state.body.length;

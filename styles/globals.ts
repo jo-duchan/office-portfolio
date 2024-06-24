@@ -9,6 +9,8 @@ const GlobalStyle = createGlobalStyle`
     ${collectionStyle};
 
     html, body, #__next {
+        overscroll-behavior: none;
+        -webkit-overflow-scrolling: touch;
         width: 100%;
         height: 100%;
     }

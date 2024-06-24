@@ -4,11 +4,11 @@ import styled from "styled-components";
 import { useForm, type FieldValues } from "react-hook-form";
 import { useRouter } from "next/router";
 import PATH from "@/constants/path";
-import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
+import { setCollection, getCollection } from "@/actions/collection-action";
+import { checkForDuplicates, setPortfolio } from "@/actions/portfolio-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
 import { colors } from "@/styles/primitive-tokens";
-import { Image } from "@/type/common";
-import { CollectionHeadAssets } from "@/type/collection";
+import { CollectionAssets } from "@/type/collection";
 import HomeActions from "@/components/admin/home/HomeActions";
 import useModal from "@/hooks/useModal";
 import TextField from "@/components/common/TextField";
@@ -21,10 +21,11 @@ export default function AdminHomePage() {
   const { modal, showModal } = useModal();
   const { register, handleSubmit, reset, control, setValue } =
     useForm<FieldValues>();
-  const [assets, setAssets] = useState<CollectionHeadAssets>({
+  const [assets, setAssets] = useState<CollectionAssets>({
     desktop: { file: null },
     mobile: { file: null },
   });
+  const [currentId, setCurrentId] = useState<string>();
 
   const handleInvokeCollectionModal = async (id?: string) => {
     if (id) {
@@ -32,6 +33,9 @@ export default function AdminHomePage() {
       // const response = await
       // reset()
       // setAssets();
+      // setCurrentId(id)
+    } else {
+      reset({});
     }
 
     const modalContent = (
@@ -41,6 +45,8 @@ export default function AdminHomePage() {
           name="title"
           label="Title"
           placeholder="프로젝트 제목을 입력하세요."
+          // 프로젝트 수정 시 타이틀은 수정 못하게
+          // id = disabled(readOnly)
         />
         <TextArea
           register={register}
@@ -81,8 +87,17 @@ export default function AdminHomePage() {
       return;
     }
 
-    // title 이미지 중복 체크 & title 공백 -로 교체
     const kebabCaseTitle = title.replaceAll(" ", "-");
+    let isDuplicate: boolean | undefined;
+
+    if (!currentId) {
+      isDuplicate = await checkForDuplicates(kebabCaseTitle);
+    }
+
+    if (isDuplicate && !currentId) {
+      window.alert("동일한 프로젝트 제목이 존재합니다.");
+      return true;
+    }
 
     const newAssets = assets;
     newAssets.desktop.file = desktop[0];
@@ -99,8 +114,8 @@ export default function AdminHomePage() {
     });
 
     await Promise.all(response).then(async () => {
-      await setPortfolio({
-        id: title,
+      await setCollection({
+        id: kebabCaseTitle,
         data: {
           metadata: {
             title,
@@ -111,14 +126,23 @@ export default function AdminHomePage() {
           head: {
             title,
             description,
-            desktop: newAssets.desktop,
-            mobile: newAssets.mobile,
+            assets: newAssets,
             keyword,
           },
         },
       });
 
-      // router.push(`${PATH.ADMIN}/${title}`);
+      await setPortfolio({
+        id: kebabCaseTitle,
+        data: {
+          title,
+          order: null,
+          publish: false,
+          date: Date.now(),
+        },
+      });
+
+      router.push(`${PATH.ADMIN}/${kebabCaseTitle}`);
     });
   };
 

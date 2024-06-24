@@ -1,16 +1,5 @@
 import { Image, TagName, ClassName } from "@/type/common";
 
-export interface CollectionSimple {
-  projectName: string;
-  order: string;
-  publish: boolean;
-  date: number; //Timestamp
-}
-
-export interface Portfolio {
-  list: CollectionSimple[];
-}
-
 export interface CollectionMetadata {
   projectName: string;
   description: string;
@@ -18,17 +7,15 @@ export interface CollectionMetadata {
   publish: boolean;
 }
 
-export interface CollectionHeadAssets {
+export interface CollectionAssets {
   [key: string]: Image;
-  desktop: Image;
-  mobile: Image;
 }
 
 export interface CollectionHead {
   title: string;
   description: string;
   keyword: string;
-  assets: CollectionHeadAssets;
+  assets: CollectionAssets;
 }
 
 export interface CollectionElement {
@@ -44,5 +31,6 @@ export interface CollectionElement {
 }
 
 export interface CollectionState {
+  head: CollectionHead;
   body: CollectionElement[];
 }

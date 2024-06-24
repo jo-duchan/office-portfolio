@@ -83,6 +83,7 @@ const Container = styled.header`
 
   background-color: ${colors.neutral[800]};
   color: ${colors.neutral[100]};
+  z-index: 900;
 `;
 
 const LogoSection = styled.div``;

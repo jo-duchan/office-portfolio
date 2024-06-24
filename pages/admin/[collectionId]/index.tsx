@@ -1,108 +1,65 @@
 import React, { useEffect } from "react";
 import { GetStaticPaths, GetStaticPropsContext } from "next";
+import Head from "next/head";
 import styled from "styled-components";
-import { setPortfolio, getPortfolio } from "@/actions/portfolio-upload-action";
-import usePortfolioStore from "@/stores/portfolio-store";
+import { getCollection, setCollection } from "@/actions/collection-action";
+import useCollectionStore from "@/stores/collection-store";
 import useCurrentElementStore from "@/stores/current-element-store";
 import { useShallow } from "zustand/react/shallow";
-import { v4 as uuidv4 } from "uuid";
-import useThemeStore from "@/stores/theme-store";
 import Renderer from "@/components/common/Renderer";
-import { PortfolioState, PortfolioElement } from "@/type/collection";
-import { Image } from "@/type/common";
-import Editor from "@/components/admin/Editor";
+import { CollectionState, CollectionElement } from "@/type/collection";
+import { colors, round } from "@/styles/primitive-tokens";
+import Editor from "@/components/admin/edit/Editor";
+import PreviewModeChanger from "@/components/admin/edit/PreviewModeChanger";
 
 interface Props {
-  portfolioId: string;
-  portfolioData: PortfolioState | null;
+  collectionId: string;
+  collectionData: CollectionState | null;
 }
-let num = 0;
 
 export default function AdminCollectionEditPage({
-  portfolioId,
-  portfolioData,
+  collectionId,
+  collectionData,
 }: Props) {
-  const { body, addElement } = usePortfolioStore(
-    useShallow((state) => ({ body: state.body, addElement: state.addElement }))
-  );
-  const { currentId, setCurrentId } = useCurrentElementStore(
+  const { head, body, init } = useCollectionStore(
     useShallow((state) => ({
-      currentId: state.currentId,
-      setCurrentId: state.setCurrentId,
+      head: state.head,
+      body: state.body,
+      init: state.init,
     }))
   );
-  const updateMediaQuery = useThemeStore((state) => state.updateMediaQuery);
 
   useEffect(() => {
     // init
-    console.log(portfolioId, portfolioData, body);
+    console.log(collectionId, collectionData);
+    if (collectionData) {
+      init(collectionData);
+    }
   }, []);
 
-  const handleAddTextElement = () => {
-    const id = uuidv4();
+  useEffect(() => {
+    console.log(head);
+  }, [head]);
 
-    addElement(
-      {
-        id,
-        tagName: "h3",
-        className: { fontSize: "font-size-14", margin: "margin-all-14" },
-        content: {
-          text: "안녕히가세요." + `${++num}`,
-        },
-      },
-      currentId
-    );
-    setCurrentId(id);
-  };
-
-  const handleAddImageElement = () => {
-    const id = uuidv4();
-    addElement(
-      {
-        id,
-        tagName: "img",
-        className: { margin: "margin-all-14" },
-        content: {
-          image: [
-            {
-              key: uuidv4(),
-              file: null,
-              url: undefined,
-            },
-            {
-              key: uuidv4(),
-              file: null,
-              url: undefined,
-            },
-          ],
-        },
-      },
-      currentId
-    );
-    setCurrentId(id);
-  };
-
-  // console.log("body", item);
   return (
-    <Container>
-      Admin Portfolio Content Section Edit Page
-      <Editor />
-      <div>
-        <button onClick={() => console.log(body)}>check data</button>
-        <button onClick={handleAddTextElement}>text add</button>
-        <button onClick={handleAddImageElement}>img add</button>
-        <button
-          onClick={() => {
-            updateMediaQuery("small");
-          }}
-        >
-          theme change
-        </button>
-      </div>
-      <div>
-        <Renderer head={portfolioData?.head!} body={body} editable={true} />
-      </div>
-    </Container>
+    <>
+      <Head>
+        <title>Admin Edit</title>
+      </Head>
+      <Container>
+        <CanvasSection>
+          <Wrapper>
+            <PreviewModeChanger />
+            <div className="canvas">
+              <Renderer head={head} body={body} editable={true} />
+            </div>
+          </Wrapper>
+        </CanvasSection>
+        <EditorSection>
+          <Editor />
+        </EditorSection>
+      </Container>
+    </>
   );
 }
 
@@ -115,15 +72,61 @@ export const getStaticPaths = (async () => {
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   const { params } = context;
-  const portfolioId = params?.portfolioId as string;
-  const portfolioData = await getPortfolio(portfolioId);
+  const collectionId = params?.collectionId as string;
+  const collectionData = await getCollection(collectionId);
 
   return {
     props: {
-      portfolioId,
-      portfolioData: portfolioData || null,
+      collectionId,
+      collectionData: collectionData || null,
     },
   };
 };
 
-const Container = styled.div``;
+const Container = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 1700px;
+  height: 100%;
+  background-color: ${colors.neutral[50]};
+  overflow: auto;
+`;
+
+const CanvasSection = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  width: 1440px;
+  height: 100%;
+
+  & .canvas {
+    width: ${({ theme }) =>
+      theme.mediaQuery === "small" ? "360px" : "1440px"};
+    height: 870px;
+    border: 4px solid ${colors.neutral[700]};
+    border-bottom: initial;
+    border-top-left-radius: ${`${round.m}px`};
+    border-top-right-radius: ${`${round.m}px`};
+    background-color: ${colors.neutral[0]};
+    overflow: hidden auto;
+  }
+`;
+
+const EditorSection = styled.div`
+  width: 260px;
+  min-width: 260px;
+  height: 870px;
+  background-color: ${colors.neutral[700]};
+  border-top-left-radius: ${`${round.m}px`};
+`;
