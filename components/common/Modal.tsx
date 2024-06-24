@@ -3,6 +3,7 @@ import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
 import Icons from "@/styles/iconography";
 import Button from "@/components/common/Button";
+import Visibility from "@/components/common/Visibility";
 
 export type SubmitAction = (
   e?: React.BaseSyntheticEvent<object, any, any> | undefined
@@ -12,6 +13,7 @@ export interface ModalProps {
   title: string;
   children: React.ReactNode;
   onHideModal: () => void;
+  persistent: boolean;
   actionLabel: string;
   action: SubmitAction;
 }
@@ -20,6 +22,7 @@ function Modal({
   title,
   children,
   onHideModal,
+  persistent,
   actionLabel,
   action,
 }: ModalProps) {
@@ -28,9 +31,11 @@ function Modal({
       <ModalSection onSubmit={action}>
         <ModalHeadSection>
           <Title>{title}</Title>
-          <Close onClick={onHideModal} type="button">
-            <Icons.close />
-          </Close>
+          <Visibility visible={!persistent}>
+            <Close onClick={onHideModal} type="button">
+              <Icons.close />
+            </Close>
+          </Visibility>
         </ModalHeadSection>
         <ModalBodySection>{children}</ModalBodySection>
         <ModalfootSection>
@@ -43,7 +48,7 @@ function Modal({
           <Button.Primary label={actionLabel} size="medium" type="submit" />
         </ModalfootSection>
       </ModalSection>
-      <Dim onClick={onHideModal} />
+      <Dim onClick={() => persistent || onHideModal()} />
     </Container>
   );
 }
@@ -59,6 +64,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 `;
 
 const Dim = styled.div`

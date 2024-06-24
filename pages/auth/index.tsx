@@ -41,6 +41,7 @@ export default function AdminAuthPage() {
     showModal({
       title: "Sign In",
       children: modalContent,
+      persistent: true,
       actionLabel: "Sign In",
       action: handleSubmit(handleSignIn),
     });
