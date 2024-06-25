@@ -41,7 +41,7 @@ export default function AdminAuthPage() {
     showModal({
       title: "Sign In",
       children: modalContent,
-      persistent: true,
+      closeAction: router.back,
       actionLabel: "Sign In",
       action: handleSubmit(handleSignIn),
     });

@@ -13,7 +13,6 @@ export interface ModalProps {
   title: string;
   children: React.ReactNode;
   onHideModal: () => void;
-  persistent: boolean;
   actionLabel: string;
   action: SubmitAction;
 }
@@ -22,7 +21,6 @@ function Modal({
   title,
   children,
   onHideModal,
-  persistent,
   actionLabel,
   action,
 }: ModalProps) {
@@ -31,11 +29,9 @@ function Modal({
       <ModalSection onSubmit={action}>
         <ModalHeadSection>
           <Title>{title}</Title>
-          <Visibility visible={!persistent}>
-            <Close onClick={onHideModal} type="button">
-              <Icons.close />
-            </Close>
-          </Visibility>
+          <Close onClick={onHideModal} type="button">
+            <Icons.close />
+          </Close>
         </ModalHeadSection>
         <ModalBodySection>{children}</ModalBodySection>
         <ModalfootSection>
@@ -48,7 +44,7 @@ function Modal({
           <Button.Primary label={actionLabel} size="medium" type="submit" />
         </ModalfootSection>
       </ModalSection>
-      <Dim onClick={() => persistent || onHideModal()} />
+      <Dim onClick={onHideModal} />
     </Container>
   );
 }

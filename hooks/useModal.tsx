@@ -5,9 +5,9 @@ import Modal, { SubmitAction } from "@/components/common/Modal";
 interface ModalParams {
   title: string;
   children: React.ReactNode;
-  persistent?: boolean;
   actionLabel: string;
   action: SubmitAction;
+  closeAction?: () => void;
 }
 
 function useModal() {
@@ -28,8 +28,7 @@ function useModal() {
       return createPortal(
         <Modal
           title={params.title}
-          onHideModal={hideModal}
-          persistent={params.persistent || false}
+          onHideModal={params.closeAction || hideModal}
           action={params.action}
           actionLabel={params.actionLabel}
         >
