@@ -7,7 +7,7 @@ export interface CurrentIdState {
   currentId: string | undefined;
 }
 export interface CurrentIdAction {
-  setCurrentId: (id: string) => void;
+  setCurrentId: (id?: string) => void;
 }
 
 const defaultState: CurrentIdState = {
@@ -17,7 +17,7 @@ const defaultState: CurrentIdState = {
 const useCurrentIdStore = create<CurrentIdState & CurrentIdAction>()(
   immer((set) => ({
     ...defaultState,
-    setCurrentId: (id: string) =>
+    setCurrentId: (id?: string) =>
       set((state) => {
         state.currentId = id;
       }),

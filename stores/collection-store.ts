@@ -23,6 +23,7 @@ const useCollectionStore = create<CollectionState & CollectionAction>()(
       }),
     addElement: (element, currentId) =>
       set((state) => {
+        console.log(currentId);
         let startPoint = state.collection.length;
 
         if (currentId) {

@@ -4,7 +4,7 @@ import Head from "next/head";
 import styled from "styled-components";
 import { getCollection, setCollection } from "@/actions/collection-action";
 import useCollectionStore from "@/stores/collection-store";
-import useCurrentElementStore from "@/stores/current-element-store";
+import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
 import Renderer from "@/components/common/Renderer";
 import { CollectionState, CollectionElement } from "@/type/collection";

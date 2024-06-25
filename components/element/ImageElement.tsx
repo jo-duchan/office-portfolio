@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useWatch, useForm, type FieldValues } from "react-hook-form";
 import useCollectionStore from "@/stores/collection-store";
-import useCurrentIdStore from "@/stores/current-element-store";
+import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
 import { objectToString } from "@/utils/utils";
 import { type ImageElement } from "@/type/collection";
@@ -68,10 +68,18 @@ interface ElementProps {
 }
 
 function ImageElement({ data, editable }: ElementProps) {
-  const { updateElement } = useCollectionStore(
-    useShallow((state) => ({ updateElement: state.updateElement }))
+  const { updateElement, removeElement } = useCollectionStore(
+    useShallow((state) => ({
+      updateElement: state.updateElement,
+      removeElement: state.removeElement,
+    }))
   );
-  const currentId = useCurrentIdStore((state) => state.currentId);
+  const { currentId, setCurrentId } = useCurrentIdStore(
+    useShallow((state) => ({
+      currentId: state.currentId,
+      setCurrentId: state.setCurrentId,
+    }))
+  );
   const { id, option, content } = data;
 
   const handleChangeImage = (imgData: File, index: number) => {
@@ -105,18 +113,25 @@ function ImageElement({ data, editable }: ElementProps) {
     updateElement(
       {
         ...data,
-        content: {
-          image: newImage,
-        },
+        content: { image: newImage },
       },
       id
     );
+  };
+
+  const handleRemoveElement = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Backspace") {
+      removeElement(id);
+      setCurrentId(undefined);
+    }
   };
 
   return (
     <Container
       className={`image-element ${objectToString(option.className)}`}
       $isFoucs={id === currentId}
+      onKeyDown={handleRemoveElement}
+      tabIndex={0}
     >
       {content?.image?.map((img, index) => (
         <ImageBase
@@ -200,6 +215,7 @@ const Container = styled.div<StyledProps>`
   position: relative;
   width: 100%;
   height: fit-content;
+  outline: initial;
 
   &.image-column-single ${`:is(${ImageInput}, ${ImageWrapper})`} {
     width: 100%;

@@ -1,5 +1,5 @@
 import React from "react";
-import useCurrentElementStore from "@/stores/current-element-store";
+import useCurrentIdStore from "@/stores/current-id-store";
 import { type CollectionElement } from "@/type/collection";
 import HeadElement from "@/components/element/CoverElement";
 import { HeadingElement, TextElement } from "@/components/element/TextElement";
@@ -12,7 +12,7 @@ interface Props {
 }
 
 function RenderItem({ element, editable }: Props) {
-  const setCurrentId = useCurrentElementStore((state) => state.setCurrentId);
+  const setCurrentId = useCurrentIdStore((state) => state.setCurrentId);
 
   const handleSelectItem = () => {
     // select item

@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import useCollectionStore from "@/stores/collection-store";
-import useCurrentIdStore from "@/stores/current-element-store";
+import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
 import { objectToString } from "@/utils/utils";
 import { type HeadingElement, type TextElement } from "@/type/collection";
@@ -17,10 +17,18 @@ interface BaseProps extends ElementProps {
 }
 
 function TextBase({ data, editable, tagName }: BaseProps) {
-  const { updateElement } = useCollectionStore(
-    useShallow((state) => ({ updateElement: state.updateElement }))
+  const { updateElement, removeElement } = useCollectionStore(
+    useShallow((state) => ({
+      updateElement: state.updateElement,
+      removeElement: state.removeElement,
+    }))
   );
-  const currentId = useCurrentIdStore((state) => state.currentId);
+  const { currentId, setCurrentId } = useCurrentIdStore(
+    useShallow((state) => ({
+      currentId: state.currentId,
+      setCurrentId: state.setCurrentId,
+    }))
+  );
   const text = useRef<string>(data.content?.text || "");
   const inner = useRef<HTMLHeadingElement | HTMLParagraphElement>(null);
   const handleChange = (ev: ContentEditableEvent) => {
@@ -30,13 +38,19 @@ function TextBase({ data, editable, tagName }: BaseProps) {
     updateElement(
       {
         ...data,
-        content: {
-          text: text.current,
-        },
+        content: { text: text.current },
       },
       data.id
     );
   };
+
+  const handleRemoveElement = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Backspace" && text.current === "") {
+      removeElement(data.id);
+      setCurrentId(undefined);
+    }
+  };
+
   return (
     <Container className="text-element" $isFoucs={data.id === currentId}>
       <ContentEditable
@@ -45,6 +59,7 @@ function TextBase({ data, editable, tagName }: BaseProps) {
         innerRef={inner}
         disabled={!editable}
         onChange={handleChange}
+        onKeyDown={handleRemoveElement}
         onBlur={handleBlur}
         tagName={tagName}
       />

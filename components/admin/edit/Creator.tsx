@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import useCollectionStore from "@/stores/collection-store";
-import useCurrentElementStore from "@/stores/current-element-store";
+import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
 import { getId } from "@/utils/utils";
 import {
@@ -18,7 +18,7 @@ function Creator() {
   const { addElement } = useCollectionStore(
     useShallow((state) => ({ addElement: state.addElement }))
   );
-  const { currentId, setCurrentId } = useCurrentElementStore(
+  const { currentId, setCurrentId } = useCurrentIdStore(
     useShallow((state) => ({
       currentId: state.currentId,
       setCurrentId: state.setCurrentId,

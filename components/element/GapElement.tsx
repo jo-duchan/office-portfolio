@@ -1,5 +1,7 @@
 import styled from "styled-components";
-import useCurrentIdStore from "@/stores/current-element-store";
+import useCollectionStore from "@/stores/collection-store";
+import useCurrentIdStore from "@/stores/current-id-store";
+import { useShallow } from "zustand/react/shallow";
 import { type GapElement } from "@/type/collection";
 import { objectToString } from "@/utils/utils";
 import { colors } from "@/styles/primitive-tokens";
@@ -14,12 +16,31 @@ interface StyledProps {
 
 function GapElement({ data }: ElementProps) {
   const { id, option } = data;
-  const currentId = useCurrentIdStore((state) => state.currentId);
+  const { removeElement } = useCollectionStore(
+    useShallow((state) => ({
+      removeElement: state.removeElement,
+    }))
+  );
+  const { currentId, setCurrentId } = useCurrentIdStore(
+    useShallow((state) => ({
+      currentId: state.currentId,
+      setCurrentId: state.setCurrentId,
+    }))
+  );
+
+  const handleRemoveElement = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Backspace") {
+      removeElement(id);
+      setCurrentId(undefined);
+    }
+  };
 
   return (
     <Container
       className={objectToString(option.className)}
       $isFoucs={id === currentId}
+      onKeyDown={handleRemoveElement}
+      tabIndex={0}
     ></Container>
   );
 }
