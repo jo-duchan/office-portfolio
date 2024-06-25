@@ -3,9 +3,14 @@ import styled from "styled-components";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentElementStore from "@/stores/current-element-store";
 import { useShallow } from "zustand/react/shallow";
-import { v4 as uuidv4 } from "uuid";
+import { getId } from "@/utils/utils";
+import {
+  type HeadingElement,
+  type TextElement,
+  type ImageElement,
+  type GapElement,
+} from "@/type/collection";
 import { colors, round } from "@/styles/primitive-tokens";
-import { CollectionElement } from "@/type/collection";
 import textStyles from "@/styles/typography";
 import Icons from "@/styles/iconography";
 
@@ -21,63 +26,72 @@ function Creator() {
   );
 
   const handleAddTextElement = (type: "h3" | "p") => {
-    const id = uuidv4();
+    const elementId = getId();
+    const initialFontSize = type === "h3" ? "heading-size-m" : "text-size-m";
 
-    const options: CollectionElement = {
-      id,
-      tagName: type,
-      className: { fontSize: "font-size-14", margin: "margin-all-14" },
-      color: "",
-      fill: "",
+    const options: HeadingElement | TextElement = {
+      id: elementId,
+      elementName: type,
+      option: {
+        className: {
+          fontSize: initialFontSize,
+          margin: "margin-all-14",
+          aline: "text-aline-center",
+        },
+        color: "",
+        fill: "",
+      },
       content: {
         text: "",
       },
     };
 
     addElement(options, currentId);
-    setCurrentId(id);
+    setCurrentId(elementId);
   };
 
   const handleAddImageElement = () => {
-    const id = uuidv4();
+    const elementId = getId();
 
-    const image = Array(2).map(() => {
+    const image = [...Array(2)].map(() => {
       return {
-        key: uuidv4(),
+        key: getId(),
         file: null,
         url: undefined,
       };
     });
 
-    const options: CollectionElement = {
-      id,
-      tagName: "img",
-      className: { margin: "margin-all-14" },
-      color: "",
-      fill: "",
+    const options: ImageElement = {
+      id: elementId,
+      elementName: "img",
+      option: {
+        className: { column: "image-column-double", margin: "margin-all-14" },
+        fill: "",
+      },
       content: {
         image,
       },
     };
 
     addElement(options, currentId);
-    setCurrentId(id);
+    setCurrentId(elementId);
   };
 
   const handleAddGapElement = () => {
-    const id = uuidv4();
+    const elementId = getId();
 
-    const options: CollectionElement = {
-      id,
-      tagName: "div",
-      className: { margin: "margin-all-14" },
-      color: "",
-      fill: "",
+    const options: GapElement = {
+      id: elementId,
+      elementName: "gap",
+      option: {
+        className: { gap: "gap-xl" },
+        fill: "",
+      },
       content: {},
     };
 
     addElement(options, currentId);
-    setCurrentId(id);
+    setCurrentId(elementId);
   };
 
   return (

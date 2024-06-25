@@ -21,10 +21,9 @@ export default function AdminCollectionEditPage({
   collectionId,
   collectionData,
 }: Props) {
-  const { head, body, init } = useCollectionStore(
+  const { collection, init } = useCollectionStore(
     useShallow((state) => ({
-      head: state.head,
-      body: state.body,
+      collection: state.collection,
       init: state.init,
     }))
   );
@@ -38,8 +37,8 @@ export default function AdminCollectionEditPage({
   }, []);
 
   useEffect(() => {
-    console.log(head);
-  }, [head]);
+    console.log("collection: ", collection);
+  }, [collection]);
 
   return (
     <>
@@ -51,7 +50,7 @@ export default function AdminCollectionEditPage({
           <Wrapper>
             <PreviewModeChanger />
             <div className="canvas">
-              <Renderer head={head} body={body} editable={true} />
+              <Renderer data={collection} editable={true} />
             </div>
           </Wrapper>
         </CanvasSection>

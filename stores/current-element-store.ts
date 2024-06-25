@@ -14,7 +14,7 @@ const defaultState: CurrentIdState = {
   currentId: undefined,
 };
 
-const useCurrentElementStore = create<CurrentIdState & CurrentIdAction>()(
+const useCurrentIdStore = create<CurrentIdState & CurrentIdAction>()(
   immer((set) => ({
     ...defaultState,
     setCurrentId: (id: string) =>
@@ -24,4 +24,4 @@ const useCurrentElementStore = create<CurrentIdState & CurrentIdAction>()(
   }))
 );
 
-export default useCurrentElementStore;
+export default useCurrentIdStore;

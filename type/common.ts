@@ -4,8 +4,6 @@ export interface Image {
   key?: string;
 }
 
-export type TagName = "h3" | "p" | "img" | "div";
-
 export interface ClassName {
   fontSize?: string;
   margin?: string;

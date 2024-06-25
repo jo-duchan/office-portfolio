@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 export function mapToArray<K, V>(map: Map<K, V>) {
   const convertedArray = Array.from(map.values());
   return convertedArray;
@@ -16,4 +18,16 @@ export function checkImageFileSize(size: number = 0) {
   }
 
   return true;
+}
+
+export function getId() {
+  return uuidv4();
+}
+
+export function convertTextToSlug(text: string) {
+  return text.toLowerCase().replaceAll(" ", "-");
+}
+
+export function objectToString(obj: Object) {
+  return Object.values(obj).join(" ");
 }

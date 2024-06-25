@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import {
-  CollectionState,
-  CollectionHead,
-  CollectionElement,
-} from "@/type/collection";
+import { CollectionState, CollectionElement } from "@/type/collection";
 
 export interface CollectionAction {
   init: (data: CollectionState) => void;
@@ -15,8 +11,7 @@ export interface CollectionAction {
 }
 
 const defaultState: CollectionState = {
-  head: {} as CollectionHead,
-  body: [] as CollectionElement[],
+  collection: [] as CollectionElement[],
 };
 
 const useCollectionStore = create<CollectionState & CollectionAction>()(
@@ -24,33 +19,36 @@ const useCollectionStore = create<CollectionState & CollectionAction>()(
     ...defaultState,
     init: (data) =>
       set((state) => {
-        state.head = data.head;
-        state.body = data.body;
+        state.collection = data.collection;
       }),
     addElement: (element, currentId) =>
       set((state) => {
-        let startPoint = state.body.length;
+        let startPoint = state.collection.length;
 
         if (currentId) {
-          const selectIndex = state.body.findIndex(
+          const selectIndex = state.collection.findIndex(
             ({ id }) => id === currentId
           );
           startPoint = selectIndex + 1;
         }
 
-        state.body.splice(startPoint, 0, element);
+        state.collection.splice(startPoint, 0, element);
       }),
     updateElement: (element, currentId) =>
       set((state) => {
-        const selectIndex = state.body.findIndex(({ id }) => id === currentId);
+        const selectIndex = state.collection.findIndex(
+          ({ id }) => id === currentId
+        );
 
-        state.body[selectIndex] = element;
+        state.collection[selectIndex] = element;
       }),
     removeElement: (currentId) =>
       set((state) => {
-        const selectIndex = state.body.findIndex(({ id }) => id === currentId);
+        const selectIndex = state.collection.findIndex(
+          ({ id }) => id === currentId
+        );
 
-        state.body.splice(selectIndex, 1);
+        state.collection.splice(selectIndex, 1);
       }),
     reset: () => set(defaultState),
   }))

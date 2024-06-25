@@ -1,7 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-import { convertImageUrl } from "@/utils/utils";
+import { convertImageUrl, getId } from "@/utils/utils";
 
-export async function getPresignedUrl(key: string = uuidv4()) {
+export async function getPresignedUrl(key: string = getId()) {
   try {
     const response = await fetch("/api/create-presigned-url", {
       method: "POST",

@@ -68,10 +68,10 @@ function ImageItem({ register, control, item, setValue }: ItemProps) {
         </ItemImageWraper>
       </Visibility>
       <Visibility visible={url === undefined}>
-        <ItemInputBtn>
+        <ItemInput>
           <Icons.addImage />
           <input {...register(item[0])} type="file" />
-        </ItemInputBtn>
+        </ItemInput>
       </Visibility>
       <ItemLebel>{item[0]}</ItemLebel>
     </Item>
@@ -138,7 +138,7 @@ const Item = styled.div`
   width: fit-content;
 `;
 
-const ItemInputBtn = styled.label`
+const ItemInput = styled.label`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,9 +147,16 @@ const ItemInputBtn = styled.label`
   background-color: ${colors.neutral[100]};
   border-radius: ${`${round.s}px`};
   cursor: pointer;
+  user-select: none;
+  transition: 200ms ease-in-out;
+  transition-property: background-color;
 
   & input {
     display: none;
+  }
+
+  &:active {
+    background-color: ${colors.neutral[200]};
   }
 `;
 

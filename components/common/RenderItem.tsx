@@ -1,10 +1,13 @@
 import React from "react";
 import useCurrentElementStore from "@/stores/current-element-store";
+import { type CollectionElement } from "@/type/collection";
+import HeadElement from "@/components/element/CoverElement";
 import { HeadingElement, TextElement } from "@/components/element/TextElement";
 import ImageElement from "@/components/element/ImageElement";
-import { type PortfolioElement } from "@/type/collection";
+import GapElement from "@/components/element/GapElement";
+
 interface Props {
-  element: PortfolioElement;
+  element: CollectionElement;
   editable: boolean;
 }
 
@@ -17,18 +20,26 @@ function RenderItem({ element, editable }: Props) {
   };
 
   const renderElement = () => {
-    if (element.tagName === "h3") {
+    if (element.elementName === "cover") {
+      return <HeadElement data={element} />;
+    }
+    if (element.elementName === "h3") {
       return <HeadingElement data={element} editable={editable} />;
     }
 
-    if (element.tagName === "p") {
+    if (element.elementName === "p") {
       return <TextElement data={element} editable={editable} />;
     }
 
-    if (element.tagName === "img") {
-      return <ImageElement data={element} />;
+    if (element.elementName === "img") {
+      return <ImageElement data={element} editable={editable} />;
+    }
+
+    if (element.elementName === "gap") {
+      return <GapElement data={element} />;
     }
   };
+
   return <div onClick={handleSelectItem}>{renderElement()}</div>;
 }
 

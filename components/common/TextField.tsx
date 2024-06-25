@@ -8,9 +8,17 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   register: UseFormRegister<FieldValues>;
   name: string;
+  disabled?: boolean;
 }
 
-function TextField({ label, register, name, type, placeholder }: Props) {
+function TextField({
+  label,
+  register,
+  name,
+  type,
+  placeholder,
+  disabled,
+}: Props) {
   return (
     <Container>
       <Label htmlFor={name}>{label}</Label>
@@ -19,6 +27,7 @@ function TextField({ label, register, name, type, placeholder }: Props) {
         {...register(name)}
         placeholder={placeholder}
         type={type}
+        disabled={disabled}
       />
     </Container>
   );

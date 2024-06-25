@@ -9,6 +9,7 @@ import { checkForDuplicates, setPortfolio } from "@/actions/portfolio-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
 import { colors } from "@/styles/primitive-tokens";
 import { CollectionAssets } from "@/type/collection";
+import { getId, convertTextToSlug } from "@/utils/utils";
 import HomeActions from "@/components/admin/home/HomeActions";
 import useModal from "@/hooks/useModal";
 import TextField from "@/components/common/TextField";
@@ -45,8 +46,7 @@ export default function AdminHomePage() {
           name="title"
           label="Title"
           placeholder="프로젝트 제목을 입력하세요."
-          // 프로젝트 수정 시 타이틀은 수정 못하게
-          // id = disabled(readOnly)
+          disabled={id !== undefined}
         />
         <TextArea
           register={register}
@@ -55,7 +55,7 @@ export default function AdminHomePage() {
           placeholder="프로젝트 설명을 입력하세요."
         />
         <ImageGroup
-          label="CoverImage"
+          label="Cover Image"
           register={register}
           control={control}
           setValue={setValue}
@@ -87,7 +87,7 @@ export default function AdminHomePage() {
       return;
     }
 
-    const kebabCaseTitle = title.replaceAll(" ", "-");
+    const kebabCaseTitle = convertTextToSlug(title);
     let isDuplicate: boolean | undefined;
 
     if (!currentId) {
@@ -96,7 +96,7 @@ export default function AdminHomePage() {
 
     if (isDuplicate && !currentId) {
       window.alert("동일한 프로젝트 제목이 존재합니다.");
-      return true;
+      return;
     }
 
     const newAssets = assets;
@@ -120,21 +120,34 @@ export default function AdminHomePage() {
           metadata: {
             title,
             description,
+            keyword,
+            shareImg: { file: null },
             publish: false,
-            keyword,
           },
-          head: {
-            title,
-            description,
-            assets: newAssets,
-            keyword,
-          },
+          collection: [
+            {
+              id: getId(),
+              elementName: "cover",
+              option: {
+                titleColor: "#000000",
+                descriptionColor: "#000000",
+                keywordColor: "#000000",
+              },
+              content: {
+                title,
+                description,
+                keyword,
+                ...newAssets,
+              },
+            },
+          ],
         },
       });
 
       await setPortfolio({
         id: kebabCaseTitle,
         data: {
+          thumbnail: { file: null },
           title,
           order: null,
           publish: false,
@@ -163,6 +176,7 @@ export default function AdminHomePage() {
 }
 
 export async function getServerSideProps() {
+  // get portfolio
   return {
     props: {},
   };

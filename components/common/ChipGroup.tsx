@@ -6,7 +6,7 @@ import {
   type UseFormSetValue,
 } from "react-hook-form";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
-import { v4 as uuidv4 } from "uuid";
+import { getId } from "@/utils/utils";
 import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
 import Icons from "@/styles/iconography";
@@ -117,7 +117,7 @@ function ChipGroup({
       <List>
         {values.map((value, index) => (
           <Chip
-            key={uuidv4()}
+            key={getId()}
             value={value}
             index={index}
             onUpdateItem={handleUpdateItem}
@@ -176,8 +176,16 @@ const Add = styled.button`
   border: initial;
   padding: initial;
   outline: initial;
+  background-color: ${colors.neutral[100]};
   border-radius: ${`${round.full}px`};
   cursor: pointer;
+  user-select: none;
+  transition: 200ms ease-in-out;
+  transition-property: background-color;
+
+  &:active {
+    background-color: ${colors.neutral[200]};
+  }
 `;
 
 const Remove = styled.div`
