@@ -10,11 +10,15 @@ function PreviewModeChanger() {
   const { register, watch, reset, setValue, getValues } =
     useForm<FieldValues>();
   const updateMediaQuery = useThemeStore((state) => state.updateMediaQuery);
+  const mediaOption = {
+    desktop: "large",
+    mobile: "small",
+  };
 
   useEffect(() => {
     // init
     reset({
-      previewMode: "desktop",
+      previewMode: "large",
     });
   }, []);
 
@@ -22,13 +26,7 @@ function PreviewModeChanger() {
     const subscribe = watch((data: FieldValues, { name }) => {
       if (name !== "previewMode") return;
 
-      if (data.previewMode === "desktop") {
-        updateMediaQuery("large");
-      }
-
-      if (data.previewMode === "mobile") {
-        updateMediaQuery("small");
-      }
+      updateMediaQuery(data.previewMode);
     });
 
     return () => subscribe.unsubscribe();
@@ -39,7 +37,7 @@ function PreviewModeChanger() {
       <OptionTitle>Preview Mode</OptionTitle>
       <Divider />
       <Select
-        options={["desktop", "mobile"]}
+        options={mediaOption}
         name={"previewMode"}
         register={register}
         setValue={setValue}

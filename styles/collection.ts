@@ -57,77 +57,101 @@ const largeStyle = css`
   }
 
   // Option Common
+  .padding-xl {
+    padding-inline: 360px;
+  }
+
+  .padding-l {
+    padding-inline: 300px;
+  }
+
+  .padding-m {
+    padding-inline: 228px;
+  }
+
+  .padding-s {
+    padding-inline: 156px;
+  }
+
+  .padding-xs {
+    padding-inline: 84px;
+  }
+
+  .padding-none {
+    padding-inline: none;
+  }
+
   // Option Text
   .text-element {
-    .heading-size-xl {
+    h3.font-size-xl {
       font-size: 72px;
       line-height: normal;
       font-weight: 600;
     }
 
-    .heading-size-l {
+    h3.font-size-l {
       font-size: 60px;
       line-height: normal;
       font-weight: 600;
     }
 
-    .heading-size-m {
+    h3.font-size-m {
       font-size: 48px;
       line-height: normal;
       font-weight: 700;
     }
 
-    .heading-size-s {
+    h3.font-size-s {
       font-size: 36px;
       line-height: normal;
       font-weight: 700;
     }
 
-    .heading-size-xs {
+    h3.font-size-xs {
       font-size: 24px;
       line-height: normal;
       font-weight: 700;
     }
 
-    .text-size-xl {
+    p.font-size-xl {
       font-size: 24px;
       line-height: 34px;
       font-weight: 400;
     }
 
-    .text-size-l {
+    p.font-size-l {
       font-size: 20px;
       line-height: 28px;
       font-weight: 400;
     }
 
-    .text-size-m {
+    p.font-size-m {
       font-size: 18px;
       line-height: 26px;
       font-weight: 400;
     }
 
-    .text-size-s {
+    p.font-size-s {
       font-size: 16px;
       line-height: 24px;
       font-weight: 400;
     }
 
-    .text-size-xs {
+    p.font-size-xs {
       font-size: 14px;
       line-height: 20px;
       font-weight: 400;
     }
 
-    .text-aline-left {
+    .aline-left {
       text-align: left;
     }
 
-    .text-aline-center {
+    .aline-center {
       text-align: center;
     }
 
-    .text-aline-right {
+    .aline-right {
       text-align: right;
     }
   }
@@ -145,11 +169,11 @@ const largeStyle = css`
     }
   }
 
-  .image-column-single > img {
+  .column-single > img {
     width: 100%;
   }
 
-  .image-column-double > img {
+  .column-double > img {
     width: calc(50% - 12px);
   }
 

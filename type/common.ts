@@ -8,7 +8,7 @@ export interface ClassName {
   fontSize?: string;
   margin?: string;
   aline?: string;
-  gap?: string;
+  gapSize?: string;
   color?: string;
   fill?: string;
   column?: string;

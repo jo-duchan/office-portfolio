@@ -11,7 +11,7 @@ import textStyles from "@/styles/typography";
 import Icons from "@/styles/iconography";
 
 interface SelectProps {
-  options: string[];
+  options: { [key: string]: string };
   name: string;
   register: UseFormRegister<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
@@ -20,7 +20,7 @@ interface SelectProps {
 
 interface OptionsProps {
   currentValue: string;
-  options: string[];
+  options: { [key: string]: string };
   onSeletValue: (value: string) => void;
 }
 
@@ -31,13 +31,13 @@ interface StyledProps {
 function Options({ currentValue, options, onSeletValue }: OptionsProps) {
   return (
     <OptionContainer>
-      {options.map((option) => (
+      {Object.entries(options).map(([key, value]) => (
         <Option
-          key={option}
-          onClick={() => onSeletValue(option)}
-          $active={currentValue === option}
+          key={key}
+          onClick={() => onSeletValue(value)}
+          $active={currentValue === value}
         >
-          {option}
+          {key}
         </Option>
       ))}
     </OptionContainer>
@@ -60,10 +60,14 @@ function Select({ options, name, register, setValue, getValues }: SelectProps) {
     handleHideOption();
   };
 
+  const getLabel = () => {
+    return Object.keys(options).find((key) => options[key] === getValues(name));
+  };
+
   return (
     <Container onMouseLeave={handleHideOption}>
       <Selector onClick={handleShowOption}>
-        {getValues(name)}
+        {getLabel()}
         <Icons.dropdown />
       </Selector>
       {show && (

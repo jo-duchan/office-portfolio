@@ -27,19 +27,18 @@ function Creator() {
 
   const handleAddTextElement = (type: "h3" | "p") => {
     const elementId = getId();
-    const initialFontSize = type === "h3" ? "heading-size-m" : "text-size-m";
 
     const options: HeadingElement | TextElement = {
       id: elementId,
       elementName: type,
       option: {
         className: {
-          fontSize: initialFontSize,
-          margin: "margin-all-14",
-          aline: "text-aline-center",
+          fontSize: "font-size-m",
+          margin: "padding-m",
+          aline: "aline-left",
         },
-        color: "",
-        fill: "",
+        color: "000000",
+        fill: "FFFFFF",
       },
       content: {
         text: "",
@@ -54,19 +53,15 @@ function Creator() {
     const elementId = getId();
 
     const image = [...Array(2)].map(() => {
-      return {
-        key: getId(),
-        file: null,
-        url: undefined,
-      };
+      return { file: null };
     });
 
     const options: ImageElement = {
       id: elementId,
       elementName: "img",
       option: {
-        className: { column: "image-column-double", margin: "margin-all-14" },
-        fill: "",
+        className: { column: "column-double", margin: "padding-m" },
+        fill: "FFFFFF",
       },
       content: {
         image,
@@ -84,8 +79,8 @@ function Creator() {
       id: elementId,
       elementName: "gap",
       option: {
-        className: { gap: "gap-xl" },
-        fill: "",
+        className: { gapSize: "gap-xl" },
+        fill: "FFFFFF",
       },
       content: {},
     };

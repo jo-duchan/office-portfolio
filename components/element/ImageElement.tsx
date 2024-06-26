@@ -4,7 +4,7 @@ import { useWatch, useForm, type FieldValues } from "react-hook-form";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
-import { objectToString } from "@/utils/utils";
+import { objectToString, getId } from "@/utils/utils";
 import { type ImageElement } from "@/type/collection";
 import { Image } from "@/type/common";
 import { colors, round } from "@/styles/primitive-tokens";
@@ -55,10 +55,12 @@ function ImageBase({
   }
 
   return (
-    <ImageInput>
-      <Icons.addImage />
-      <input type="file" {...register("img")} />
-    </ImageInput>
+    <InputWrapper>
+      <AddButton>
+        <Icons.addImage />
+        <input type="file" {...register("img")} />
+      </AddButton>
+    </InputWrapper>
   );
 }
 
@@ -81,6 +83,33 @@ function ImageElement({ data, editable }: ElementProps) {
     }))
   );
   const { id, option, content } = data;
+
+  useEffect(() => {
+    if (option.className.column === "column-single") {
+      // data.content.image[0].key && deleItemList로 체크해서 나중에 삭제
+      updateElement(
+        {
+          ...data,
+          content: {
+            image: [data.content.image[0]],
+          },
+        },
+        id
+      );
+    }
+
+    if (option.className.column === "column-double") {
+      updateElement(
+        {
+          ...data,
+          content: {
+            image: [data.content.image[0], { file: null }],
+          },
+        },
+        id
+      );
+    }
+  }, [option.className.column]);
 
   const handleChangeImage = (imgData: File, index: number) => {
     const newImage = [...content.image];
@@ -121,6 +150,7 @@ function ImageElement({ data, editable }: ElementProps) {
 
   const handleRemoveElement = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Backspace") {
+      // key 체크해서 있으면 -> deleItemList 저장 나중에 삭제
       removeElement(id);
       setCurrentId(undefined);
     }
@@ -132,10 +162,13 @@ function ImageElement({ data, editable }: ElementProps) {
       $isFoucs={id === currentId}
       onKeyDown={handleRemoveElement}
       tabIndex={0}
+      style={{
+        background: `#${data.option.fill}`,
+      }}
     >
       {content?.image?.map((img, index) => (
         <ImageBase
-          key={img.key}
+          key={img.key ?? getId()}
           editable={editable}
           index={index}
           imgData={img}
@@ -149,21 +182,23 @@ function ImageElement({ data, editable }: ElementProps) {
 
 export default ImageElement;
 
-const ImageInput = styled.label`
+const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   height: 320px;
   background-color: ${colors.neutral[100]};
   border-radius: ${`${round.s}px`};
+`;
+
+const AddButton = styled.label`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   user-select: none;
-  transition: 200ms ease-in-out;
-  transition-property: background-color;
-
-  &:active {
-    background-color: ${colors.neutral[200]};
-  }
 
   & input {
     display: none;
@@ -171,6 +206,12 @@ const ImageInput = styled.label`
 
   & svg path {
     fill: ${colors.neutral[500]};
+    transition: 200ms ease-in-out;
+    transition-property: fill;
+  }
+
+  &:active svg path {
+    fill: ${colors.neutral[400]};
   }
 `;
 
@@ -217,17 +258,19 @@ const Container = styled.div<StyledProps>`
   height: fit-content;
   outline: initial;
 
-  &.image-column-single ${`:is(${ImageInput}, ${ImageWrapper})`} {
+  &.column-single ${`:is(${InputWrapper}, ${ImageWrapper})`} {
     width: 100%;
   }
 
-  &.image-column-double ${`:is(${ImageInput}, ${ImageWrapper})`} {
+  &.column-double ${`:is(${InputWrapper}, ${ImageWrapper})`} {
     width: calc(50% - 12px);
   }
 
   &::before {
     content: "";
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     border: 3px solid ${colors.primary[500]};

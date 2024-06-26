@@ -59,6 +59,7 @@ export const colors = {
 };
 
 export const round = {
+  xs: 2,
   s: 4,
   m: 8,
   l: 12,

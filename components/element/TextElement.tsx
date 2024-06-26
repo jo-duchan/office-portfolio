@@ -33,12 +33,10 @@ function TextBase({ data, editable, tagName }: BaseProps) {
   const inner = useRef<HTMLHeadingElement | HTMLParagraphElement>(null);
   const handleChange = (ev: ContentEditableEvent) => {
     text.current = ev.currentTarget.innerText;
-  };
-  const handleBlur = () => {
     updateElement(
       {
         ...data,
-        content: { text: text.current },
+        content: { text: ev.currentTarget.innerText },
       },
       data.id
     );
@@ -52,7 +50,14 @@ function TextBase({ data, editable, tagName }: BaseProps) {
   };
 
   return (
-    <Container className="text-element" $isFoucs={data.id === currentId}>
+    <Container
+      className="text-element"
+      $isFoucs={data.id === currentId}
+      style={{
+        color: `#${data.option.color}`,
+        background: `#${data.option.fill}`,
+      }}
+    >
       <ContentEditable
         className={objectToString(data.option.className)}
         html={text.current}
@@ -60,7 +65,6 @@ function TextBase({ data, editable, tagName }: BaseProps) {
         disabled={!editable}
         onChange={handleChange}
         onKeyDown={handleRemoveElement}
-        onBlur={handleBlur}
         tagName={tagName}
       />
     </Container>
