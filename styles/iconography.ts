@@ -12,6 +12,7 @@ import DropDown from "@/public/assets/icon/icon-drop-down.svg";
 import AlignCenter from "@/public/assets/icon/icon-align-center.svg";
 import AlignLeft from "@/public/assets/icon/icon-align-left.svg";
 import AlignRight from "@/public/assets/icon/icon-align-right.svg";
+import Progress from "@/public/assets/icon/icon-progress.svg";
 
 const Icons = {
   heading: Heading,
@@ -28,6 +29,7 @@ const Icons = {
   alignCenter: AlignCenter,
   alignLeft: AlignLeft,
   alignRight: AlignRight,
+  progress: Progress,
 };
 
 export default Icons;

@@ -5,18 +5,25 @@ import { useForm, type FieldValues } from "react-hook-form";
 import { useRouter } from "next/router";
 import PATH from "@/constants/path";
 import useModal from "@/hooks/useModal";
+import useProgress from "@/hooks/useProgress";
 import TextField from "@/components/common/TextField";
 
 export default function AdminAuthPage() {
   const { modal, showModal } = useModal();
+  const { progress, showProgress, hideProgress } = useProgress();
   const { register, handleSubmit } = useForm<FieldValues>();
 
   const router = useRouter();
   const handleSignIn = async (data: FieldValues) => {
+    showProgress();
     const result = await signIn(data.id, data.password);
 
     if (result?.ok) {
+      hideProgress();
       router.push(PATH.ADMIN);
+    } else {
+      hideProgress();
+      // 에러 처리 console.error();
     }
   };
 
@@ -53,6 +60,7 @@ export default function AdminAuthPage() {
         <title>Admin Auth</title>
       </Head>
       {modal}
+      {progress}
     </>
   );
 }

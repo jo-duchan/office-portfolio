@@ -7,6 +7,7 @@ import PATH from "@/constants/path";
 import { setCollection, getCollection } from "@/actions/collection-action";
 import { checkForDuplicates, setPortfolio } from "@/actions/portfolio-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
+import useProgress from "@/hooks/useProgress";
 import { colors } from "@/styles/primitive-tokens";
 import { CollectionAssets } from "@/type/collection";
 import { getId, convertTextToSlug } from "@/utils/utils";
@@ -27,6 +28,7 @@ export default function AdminHomePage() {
     mobile: { file: null },
   });
   const [currentId, setCurrentId] = useState<string>();
+  const { progress, showProgress, hideProgress } = useProgress();
 
   const handleInvokeCollectionModal = async (id?: string) => {
     if (id) {
@@ -99,6 +101,7 @@ export default function AdminHomePage() {
       return;
     }
 
+    showProgress();
     const newAssets = assets;
     newAssets.desktop.file = desktop[0];
     newAssets.mobile.file = mobile[0];
@@ -155,6 +158,7 @@ export default function AdminHomePage() {
         },
       });
 
+      hideProgress();
       router.push(`${PATH.ADMIN}/${kebabCaseTitle}`);
     });
   };
@@ -165,11 +169,12 @@ export default function AdminHomePage() {
         <title>Admin Home</title>
       </Head>
       <Container>
-        {modal}
         <Wrapper>
           <HomeActions onInvokeCollectionModal={handleInvokeCollectionModal} />
           {/* portfolio */}
         </Wrapper>
+        {modal}
+        {progress}
       </Container>
     </>
   );
