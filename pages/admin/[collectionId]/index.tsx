@@ -27,18 +27,20 @@ export default function AdminCollectionEditPage({
       init: state.init,
     }))
   );
+  const setCurrentId = useCurrentIdStore(
+    useShallow((state) => state.setCurrentId)
+  );
 
   useEffect(() => {
     // init
-    console.log(collectionId, collectionData);
     if (collectionData) {
       init(collectionData);
     }
   }, []);
 
-  useEffect(() => {
-    console.log("collection: ", collection);
-  }, [collection]);
+  const handleUnselectItem = () => {
+    setCurrentId(undefined);
+  };
 
   return (
     <>
@@ -57,6 +59,7 @@ export default function AdminCollectionEditPage({
         <EditorSection>
           <Editor />
         </EditorSection>
+        <Background onClick={handleUnselectItem} />
       </Container>
     </>
   );
@@ -89,16 +92,28 @@ const Container = styled.div`
   width: 100%;
   min-width: 1700px;
   height: 100%;
-  background-color: ${colors.neutral[50]};
   overflow: auto;
 `;
 
+const Background = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: ${colors.neutral[50]};
+  z-index: 0;
+`;
+
 const CanvasSection = styled.div`
+  position: relative;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 500;
+  pointer-events: none;
 `;
 
 const Wrapper = styled.div`
@@ -108,6 +123,7 @@ const Wrapper = styled.div`
   justify-content: flex-end;
   width: 1440px;
   height: 100%;
+  pointer-events: none;
 
   & .canvas {
     width: ${({ theme }) =>
@@ -119,13 +135,16 @@ const Wrapper = styled.div`
     border-top-right-radius: ${`${round.m}px`};
     background-color: ${colors.neutral[0]};
     overflow: hidden auto;
+    pointer-events: auto;
   }
 `;
 
 const EditorSection = styled.div`
+  position: relative;
   width: 260px;
   min-width: 260px;
   height: 870px;
   background-color: ${colors.neutral[700]};
   border-top-left-radius: ${`${round.m}px`};
+  z-index: 500;
 `;

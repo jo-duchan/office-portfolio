@@ -4,7 +4,7 @@ import { useWatch, useForm, type FieldValues } from "react-hook-form";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
-import { objectToString, getId } from "@/utils/utils";
+import { objectToString } from "@/utils/utils";
 import { type ImageElement } from "@/type/collection";
 import { Image } from "@/type/common";
 import { colors, round } from "@/styles/primitive-tokens";
@@ -34,6 +34,9 @@ function ImageBase({
     name: "img",
     control,
   });
+  useEffect(() => {
+    console.log("리렌더링");
+  }, []);
 
   useEffect(() => {
     imgInput && onChange(imgInput[0], index);
@@ -49,7 +52,7 @@ function ImageBase({
         <RemoveButton onClick={() => onRemove(index)}>
           <Icons.removeImage viewBox={"0 0 24 24"} width={18} height={18} />
         </RemoveButton>
-        <img src={imgData.url} />
+        <img src={imgData.url} loading="lazy" />
       </ImageWrapper>
     );
   }
@@ -168,7 +171,7 @@ function ImageElement({ data, editable }: ElementProps) {
     >
       {content?.image?.map((img, index) => (
         <ImageBase
-          key={img.key ?? getId()}
+          key={index}
           editable={editable}
           index={index}
           imgData={img}

@@ -129,9 +129,9 @@ export default function AdminHomePage() {
               id: getId(),
               elementName: "cover",
               option: {
-                titleColor: "#000000",
-                descriptionColor: "#000000",
-                keywordColor: "#000000",
+                titleColor: "000000",
+                descriptionColor: "000000",
+                keywordColor: "000000",
               },
               content: {
                 title,

@@ -59,6 +59,7 @@ const Container = styled.div`
   border-radius: ${`${round.s}px`};
   padding: 8px 20px;
   margin-bottom: 12px;
+  pointer-events: auto;
 `;
 
 const OptionTitle = styled.h3`

@@ -36,7 +36,6 @@ function ImageItem({ register, control, item, setValue }: ItemProps) {
 
   useEffect(() => {
     // init
-
     item[1].url && setUrl(item[1].url);
   }, []);
 

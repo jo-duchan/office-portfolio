@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
+import useDefaultOptionStore from "@/stores/collection-default-option";
 import { useShallow } from "zustand/react/shallow";
 import { getId } from "@/utils/utils";
 import {
@@ -15,14 +16,17 @@ import textStyles from "@/styles/typography";
 import Icons from "@/styles/iconography";
 
 function Creator() {
-  const { addElement } = useCollectionStore(
-    useShallow((state) => ({ addElement: state.addElement }))
+  const addElement = useCollectionStore(
+    useShallow((state) => state.addElement)
   );
   const { currentId, setCurrentId } = useCurrentIdStore(
     useShallow((state) => ({
       currentId: state.currentId,
       setCurrentId: state.setCurrentId,
     }))
+  );
+  const defaultOption = useDefaultOptionStore(
+    useShallow((state) => state.options)
   );
 
   const handleAddTextElement = (type: "h3" | "p") => {
@@ -33,12 +37,12 @@ function Creator() {
       elementName: type,
       option: {
         className: {
-          fontSize: "font-size-m",
-          margin: "padding-m",
-          aline: "aline-left",
+          fontSize: defaultOption.fontSize,
+          margin: defaultOption.margin,
+          aline: defaultOption.aline,
         },
-        color: "000000",
-        fill: "FFFFFF",
+        color: defaultOption.color,
+        fill: defaultOption.fill,
       },
       content: {
         text: "",
@@ -60,8 +64,11 @@ function Creator() {
       id: elementId,
       elementName: "img",
       option: {
-        className: { column: "column-double", margin: "padding-m" },
-        fill: "FFFFFF",
+        className: {
+          column: defaultOption.column,
+          margin: defaultOption.margin,
+        },
+        fill: defaultOption.fill,
       },
       content: {
         image,
@@ -79,8 +86,8 @@ function Creator() {
       id: elementId,
       elementName: "gap",
       option: {
-        className: { gapSize: "gap-xl" },
-        fill: "FFFFFF",
+        className: { gapSize: defaultOption.gapSize },
+        fill: defaultOption.fill,
       },
       content: {},
     };

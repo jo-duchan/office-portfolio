@@ -9,7 +9,5 @@ export interface ClassName {
   margin?: string;
   aline?: string;
   gapSize?: string;
-  color?: string;
-  fill?: string;
   column?: string;
 }

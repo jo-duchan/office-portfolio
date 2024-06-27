@@ -7,9 +7,12 @@ import { useShallow } from "zustand/react/shallow";
 import { type CollectionElement } from "@/type/collection";
 import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
+import DefaultController from "@/components/admin/edit/DefaultController";
+import CoverController from "@/components/admin/edit/CoverController";
 import TextController from "@/components/admin/edit/TextController";
 import ImageController from "@/components/admin/edit/ImageController";
 import GapController from "@/components/admin/edit/GapController";
+import Visibility from "@/components/common/Visibility";
 
 type HashMap = Map<string, CollectionElement>;
 
@@ -37,13 +40,29 @@ function Controller() {
 
   const renderController = () => {
     if (currentElement === undefined) {
-      return <>default controller</>;
+      return (
+        <DefaultController
+          register={register}
+          watch={watch}
+          reset={reset}
+          setValue={setValue}
+          getValues={getValues}
+        />
+      );
     }
 
     const { elementName } = currentElement;
 
     if (elementName === "cover") {
-      return <>cover controller</>;
+      return (
+        <CoverController
+          currentData={currentElement}
+          register={register}
+          watch={watch}
+          reset={reset}
+          getValues={getValues}
+        />
+      );
     }
 
     if (elementName === "h3" || elementName === "p") {
@@ -88,7 +107,12 @@ function Controller() {
 
   return (
     <Container>
-      <OptionTitle>Options</OptionTitle>
+      <Visibility visible={currentElement === undefined}>
+        <OptionTitle>Default Options</OptionTitle>
+      </Visibility>
+      <Visibility visible={currentElement !== undefined}>
+        <OptionTitle>Options</OptionTitle>
+      </Visibility>
       <Divider />
       <form onSubmit={handleSubmit(handleUpdateDatabase)}>
         {renderController()}
