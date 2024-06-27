@@ -1,42 +1,148 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { GetStaticPaths, GetStaticPropsContext } from "next";
 import Head from "next/head";
 import styled from "styled-components";
+import { useForm, type FieldValues } from "react-hook-form";
 import { getCollection, setCollection } from "@/actions/collection-action";
+import { handleUploadImage } from "@/actions/img-upload-actions";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
 import Renderer from "@/components/common/Renderer";
-import { CollectionState, CollectionElement } from "@/type/collection";
+import {
+  CollectionMetadata,
+  CollectionElement,
+  ImageElement,
+} from "@/type/collection";
 import { colors, round } from "@/styles/primitive-tokens";
+import { CollectionAssets } from "@/type/collection";
+import useModal from "@/hooks/useModal";
+import useProgress from "@/hooks/useProgress";
 import Editor from "@/components/admin/edit/Editor";
 import PreviewModeChanger from "@/components/admin/edit/PreviewModeChanger";
+import ImageGroup from "@/components/common/ImageGroup";
+import CheckGroup from "@/components/admin/edit/CheckGroup";
+import textStyles from "@/styles/typography";
+import { Image } from "@/type/common";
+
+export interface CollectionData {
+  metadata: CollectionMetadata;
+  collection: CollectionElement[];
+}
 
 interface Props {
   collectionId: string;
-  collectionData: CollectionState | null;
+  collectionData: CollectionData | null;
 }
 
 export default function AdminCollectionEditPage({
   collectionId,
   collectionData,
 }: Props) {
-  const { collection, init } = useCollectionStore(
+  const { modal, showModal } = useModal();
+  const { progress, showProgress, hideProgress } = useProgress();
+  const { register, handleSubmit, reset, control, setValue, getValues } =
+    useForm<FieldValues>();
+  // const collection = useCollectionStore((state) => state.collection);
+  // const init = useCollectionStore((state) => state.init);
+  const { collection, init, updateElement } = useCollectionStore(
     useShallow((state) => ({
       collection: state.collection,
       init: state.init,
+      updateElement: state.updateElement,
     }))
   );
   const setCurrentId = useCurrentIdStore(
     useShallow((state) => state.setCurrentId)
   );
+  const [assets, setAssets] = useState<CollectionAssets>({
+    thumbnail: { file: null },
+    share: { file: null },
+  });
+  const publishOption = {
+    Public: "public",
+    Private: "private",
+  };
 
   useEffect(() => {
     // init
     if (collectionData) {
+      const publish = collectionData.metadata.publish
+        ? publishOption.Public
+        : publishOption.Private;
+
       init(collectionData);
+      reset({
+        publish: publish,
+      });
     }
   }, []);
+
+  const handleInvokeCollectionModal = async () => {
+    const modalContent = (
+      <>
+        <ImageGroup
+          label="Meta Image"
+          register={register}
+          control={control}
+          setValue={setValue}
+          items={Object.entries(assets)}
+        />
+        <ModalCheckGropWrapper>
+          <CheckGroup
+            theme="light"
+            size="large"
+            name="publish"
+            options={publishOption}
+            register={register}
+            setValue={setValue}
+            getValues={getValues}
+          />
+          <div className="divider" />
+          <p>컬렉션의 공개 여부를 선택해 주세요.</p>
+        </ModalCheckGropWrapper>
+      </>
+    );
+
+    showModal({
+      title: "Publish Collection",
+      children: modalContent,
+      actionLabel: "Create",
+      action: handleSubmit(handleSubmitCollectionData),
+    });
+  };
+
+  const handleSubmitCollectionData = async (data: FieldValues) => {
+    const newCollection = [...collection];
+
+    const response = newCollection.map(async (element, elementIdx) => {
+      if (element.elementName === "img") {
+        const response = element.content.image
+          .filter(({ file }) => file !== null)
+          .map(async (img) => {
+            const { key, url, file } = img;
+            const result = await handleUploadImage({ key, preview: url, file });
+
+            return { key: result!.key, url: result!.url, file: null };
+          });
+
+        await Promise.all(response).then((imgArr) => {
+          newCollection[elementIdx] = {
+            ...newCollection[elementIdx],
+            content: {
+              ...newCollection[elementIdx].content,
+              image: [...imgArr],
+            },
+          } as ImageElement;
+        });
+      }
+    });
+
+    // 삭제까지 Promise 받고 DB 저장
+    await Promise.all(response).then(() => {
+      console.log(newCollection);
+    });
+  };
 
   const handleUnselectItem = () => {
     setCurrentId(undefined);
@@ -57,10 +163,12 @@ export default function AdminCollectionEditPage({
           </Wrapper>
         </CanvasSection>
         <EditorSection>
-          <Editor />
+          <Editor onInvokeCollectionModal={handleInvokeCollectionModal} />
         </EditorSection>
         <Background onClick={handleUnselectItem} />
       </Container>
+      {modal}
+      {progress}
     </>
   );
 }
@@ -147,4 +255,22 @@ const EditorSection = styled.div`
   background-color: ${colors.neutral[700]};
   border-top-left-radius: ${`${round.m}px`};
   z-index: 500;
+`;
+
+const ModalCheckGropWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 12px;
+
+  & .divider {
+    width: 1px;
+    height: 16px;
+    background-color: ${colors.neutral[300]};
+  }
+
+  & p {
+    ${textStyles.body4.regular};
+    color: ${colors.neutral[600]};
+  }
 `;

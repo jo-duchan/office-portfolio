@@ -7,12 +7,12 @@ import PATH from "@/constants/path";
 import { setCollection, getCollection } from "@/actions/collection-action";
 import { checkForDuplicates, setPortfolio } from "@/actions/portfolio-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
-import useProgress from "@/hooks/useProgress";
 import { colors } from "@/styles/primitive-tokens";
 import { CollectionAssets } from "@/type/collection";
 import { getId, convertTextToSlug } from "@/utils/utils";
-import HomeActions from "@/components/admin/home/HomeActions";
 import useModal from "@/hooks/useModal";
+import useProgress from "@/hooks/useProgress";
+import HomeActions from "@/components/admin/home/HomeActions";
 import TextField from "@/components/common/TextField";
 import TextArea from "@/components/common/TextArea";
 import ImageGroup from "@/components/common/ImageGroup";
@@ -21,6 +21,7 @@ import ChipGroup from "@/components/common/ChipGroup";
 export default function AdminHomePage() {
   const router = useRouter();
   const { modal, showModal } = useModal();
+  const { progress, showProgress, hideProgress } = useProgress();
   const { register, handleSubmit, reset, control, setValue } =
     useForm<FieldValues>();
   const [assets, setAssets] = useState<CollectionAssets>({
@@ -28,7 +29,6 @@ export default function AdminHomePage() {
     mobile: { file: null },
   });
   const [currentId, setCurrentId] = useState<string>();
-  const { progress, showProgress, hideProgress } = useProgress();
 
   const handleInvokeCollectionModal = async (id?: string) => {
     if (id) {
@@ -77,11 +77,11 @@ export default function AdminHomePage() {
       title: `${id ? "Collection" : "New Collection"}`,
       children: modalContent,
       actionLabel: "Create",
-      action: handleSubmit(handleSubmitCollectionModal),
+      action: handleSubmit(handleSubmitCollectionData),
     });
   };
 
-  const handleSubmitCollectionModal = async (data: FieldValues) => {
+  const handleSubmitCollectionData = async (data: FieldValues) => {
     const { title, description, desktop, mobile, keyword } = data;
 
     if (!title || !description || !desktop[0] || !mobile[0] || !keyword) {
@@ -173,9 +173,9 @@ export default function AdminHomePage() {
           <HomeActions onInvokeCollectionModal={handleInvokeCollectionModal} />
           {/* portfolio */}
         </Wrapper>
-        {modal}
-        {progress}
       </Container>
+      {modal}
+      {progress}
     </>
   );
 }

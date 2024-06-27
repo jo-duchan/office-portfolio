@@ -1,6 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import styled from "styled-components";
-import { useForm, type FieldValues } from "react-hook-form";
+import {
+  type UseFormRegister,
+  type UseFormReset,
+  type UseFormWatch,
+  type UseFormSetValue,
+  type UseFormGetValues,
+  type FieldValues,
+} from "react-hook-form";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
@@ -16,9 +23,15 @@ import Visibility from "@/components/common/Visibility";
 
 type HashMap = Map<string, CollectionElement>;
 
-function Controller() {
-  const { register, handleSubmit, watch, reset, setValue, getValues } =
-    useForm<FieldValues>();
+interface Props {
+  register: UseFormRegister<FieldValues>;
+  reset: UseFormReset<FieldValues>;
+  watch: UseFormWatch<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
+  getValues: UseFormGetValues<FieldValues>;
+}
+
+function Controller({ register, reset, watch, setValue, getValues }: Props) {
   const [elementHash, setElementHash] = useState<HashMap>();
   const collection = useCollectionStore(
     useShallow((state) => state.collection)
@@ -26,7 +39,7 @@ function Controller() {
   const currentId = useCurrentIdStore(useShallow((state) => state.currentId));
   const currentElement = elementHash?.get(currentId || "");
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const hashMap = collection.reduce((map, element) => {
       map.set(element.id, { ...element });
       return map;
@@ -34,9 +47,6 @@ function Controller() {
 
     setElementHash(hashMap);
   }, [collection]);
-
-  // 부모에서 받아오기
-  const handleUpdateDatabase = () => {};
 
   const renderController = () => {
     if (currentElement === undefined) {
@@ -114,9 +124,7 @@ function Controller() {
         <OptionTitle>Options</OptionTitle>
       </Visibility>
       <Divider />
-      <form onSubmit={handleSubmit(handleUpdateDatabase)}>
-        {renderController()}
-      </form>
+      {renderController()}
     </Container>
   );
 }

@@ -4,7 +4,7 @@ import { useWatch, useForm, type FieldValues } from "react-hook-form";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
-import { objectToString } from "@/utils/utils";
+import { objectToString, checkImageFileSize } from "@/utils/utils";
 import { type ImageElement } from "@/type/collection";
 import { Image } from "@/type/common";
 import { colors, round } from "@/styles/primitive-tokens";
@@ -34,9 +34,6 @@ function ImageBase({
     name: "img",
     control,
   });
-  useEffect(() => {
-    console.log("리렌더링");
-  }, []);
 
   useEffect(() => {
     imgInput && onChange(imgInput[0], index);
@@ -115,6 +112,8 @@ function ImageElement({ data, editable }: ElementProps) {
   }, [option.className.column]);
 
   const handleChangeImage = (imgData: File, index: number) => {
+    if (!checkImageFileSize(imgData.size)) return;
+
     const newImage = [...content.image];
     if (!newImage) return;
     newImage[index] = {

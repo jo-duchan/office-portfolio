@@ -111,6 +111,7 @@ function DefaultController({
           options={columnOption}
           name="column"
           register={register}
+          setValue={setValue}
           getValues={getValues}
         />
       </ControllerOptionWrapper>

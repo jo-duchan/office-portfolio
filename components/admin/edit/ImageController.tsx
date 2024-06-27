@@ -104,6 +104,7 @@ function ImageController({
           options={columnOption}
           name="column"
           register={register}
+          setValue={setValue}
           getValues={getValues}
         />
       </ControllerOptionWrapper>
