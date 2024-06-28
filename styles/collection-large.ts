@@ -1,12 +1,7 @@
 import { css } from "styled-components";
 
-const collectionStyle = css`
-  ${({ theme }) => (theme.mediaQuery === "large" ? largeStyle : smallStyle)}
-`;
-
-const largeStyle = css`
-  // Head
-  .collection-head {
+const cover = css`
+  .collection-cover {
     position: relative;
     width: 100%;
     height: fit-content;
@@ -55,8 +50,9 @@ const largeStyle = css`
       line-height: 26px;
     }
   }
+`;
 
-  // Option Common
+const margin = css`
   .padding-xl {
     padding-inline: 360px;
   }
@@ -80,8 +76,9 @@ const largeStyle = css`
   .padding-none {
     padding-inline: none;
   }
+`;
 
-  // Option Text
+const heading = css`
   .text-element {
     h3.font-size-xl {
       font-size: 72px;
@@ -112,7 +109,11 @@ const largeStyle = css`
       line-height: normal;
       font-weight: 700;
     }
+  }
+`;
 
+const text = css`
+  .text-element {
     p.font-size-xl {
       font-size: 24px;
       line-height: 34px;
@@ -142,7 +143,11 @@ const largeStyle = css`
       line-height: 20px;
       font-weight: 400;
     }
+  }
+`;
 
+const align = css`
+  .text-element {
     .aline-left {
       text-align: left;
     }
@@ -155,11 +160,12 @@ const largeStyle = css`
       text-align: right;
     }
   }
+`;
 
-  // Option Image
+const image = css`
   .image-element {
     display: flex;
-    align-items: flex-start;
+    justify-content: flex-start;
     width: 100%;
     gap: 24px;
 
@@ -176,8 +182,9 @@ const largeStyle = css`
   .column-double > img {
     width: calc(50% - 12px);
   }
+`;
 
-  // Option Gap
+const gap = css`
   .gap-xl {
     height: 200px;
   }
@@ -199,65 +206,14 @@ const largeStyle = css`
   }
 `;
 
-const smallStyle = css`
-  // Head
-  .collection-head {
-    position: relative;
-    width: 100%;
-    height: fit-content;
-    text-align: center;
-
-    .collection-large-img {
-      display: none;
-    }
-
-    .collection-small-img {
-      display: block;
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-    }
-
-    .text-wrapper {
-      position: absolute;
-      left: 50%;
-      transform: translate3d(-50%, 0, 0);
-      width: 100%;
-      padding-inline: 32px;
-      margin-top: 48.33333%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .title {
-      text-align: center;
-      font-size: 42px;
-      font-weight: 600;
-      margin-bottom: 6.66666%;
-    }
-
-    .description {
-      text-align: center;
-      font-size: 18px;
-      font-weight: 400;
-      line-height: 24px;
-      margin-bottom: 33.3333%;
-    }
-
-    .keyword {
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 20px;
-    }
-  }
-  // Option Text
-  // Option Image
-  .image-element {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-  }
+const collectionLargeStyle = css`
+  ${cover};
+  ${margin};
+  ${heading};
+  ${text};
+  ${align};
+  ${image};
+  ${gap};
 `;
 
-export default collectionStyle;
+export default collectionLargeStyle;

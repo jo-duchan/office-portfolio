@@ -19,7 +19,7 @@ function CoverElement({ data }: Props) {
   const { titleColor, descriptionColor, keywordColor } = data.option;
 
   return (
-    <Container className="collection-head" $isFoucs={data.id === currentId}>
+    <Container className="collection-cover" $isFoucs={data.id === currentId}>
       <div className="text-wrapper">
         <h3 className="title" style={{ color: `#${titleColor}` }}>
           {title}
