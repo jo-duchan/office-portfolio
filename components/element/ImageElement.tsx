@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { useWatch, useForm, type FieldValues } from "react-hook-form";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
@@ -260,13 +260,17 @@ const Container = styled.div<StyledProps>`
   height: fit-content;
   outline: initial;
 
-  &.column-single ${`:is(${InputWrapper}, ${ImageWrapper})`} {
-    width: 100%;
-  }
+  ${({ theme }) =>
+    theme.mediaQuery === "large" &&
+    css`
+      &.column-single ${`:is(${InputWrapper}, ${ImageWrapper})`} {
+        width: 100%;
+      }
 
-  &.column-double ${`:is(${InputWrapper}, ${ImageWrapper})`} {
-    width: calc(50% - 12px);
-  }
+      &.column-double ${`:is(${InputWrapper}, ${ImageWrapper})`} {
+        width: calc(50% - 12px);
+      }
+    `}
 
   &::before {
     content: "";

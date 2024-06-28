@@ -165,9 +165,9 @@ const align = css`
 const image = css`
   .image-element {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
     width: 100%;
-    gap: 24px;
+    gap: 20px;
 
     & img {
       display: block;

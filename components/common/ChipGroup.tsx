@@ -26,6 +26,12 @@ function Chip({ value, index, onUpdateItem, onRemoveItem }: ChipProps) {
     text.current = ev.target.value;
   };
 
+  const pasteHandler = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    text.current = e.clipboardData.getData("text/plain");
+    handleBlur();
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -51,6 +57,7 @@ function Chip({ value, index, onUpdateItem, onRemoveItem }: ChipProps) {
         onChange={handleChangeText}
         onKeyDown={handleKeyDown}
         onClick={handleClick}
+        onPaste={pasteHandler}
         onBlur={handleBlur}
         tagName="span"
       />
