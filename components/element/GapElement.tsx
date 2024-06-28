@@ -41,6 +41,9 @@ function GapElement({ data }: ElementProps) {
       $isFoucs={id === currentId}
       onKeyDown={handleRemoveElement}
       tabIndex={0}
+      style={{
+        background: `#${data.option.fill}`,
+      }}
     ></Container>
   );
 }

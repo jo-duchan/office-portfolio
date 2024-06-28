@@ -18,16 +18,26 @@ import {
   CollectionElement,
   ImageElement,
 } from "@/type/collection";
-import { colors, round } from "@/styles/primitive-tokens";
+
 import { CollectionAssets } from "@/type/collection";
+import { CollectionSimple } from "@/type/collection-list";
 import useModal from "@/hooks/useModal";
 import useProgress from "@/hooks/useProgress";
+import { publishOption } from "@/constants/metadata-option";
+import PATH from "@/constants/path";
+import { colors, round } from "@/styles/primitive-tokens";
+import textStyles from "@/styles/typography";
 import Editor from "@/components/admin/edit/Editor";
 import PreviewModeChanger from "@/components/admin/edit/PreviewModeChanger";
 import ImageGroup from "@/components/common/ImageGroup";
 import CheckGroup from "@/components/admin/edit/CheckGroup";
-import textStyles from "@/styles/typography";
 import { Image } from "@/type/common";
+
+export interface MetaAssets {
+  [key: string]: Image;
+  share: Image;
+  thumbnail: Image;
+}
 
 export interface CollectionData {
   metadata: CollectionMetadata;
@@ -36,24 +46,23 @@ export interface CollectionData {
 
 interface Props {
   collectionId: string;
-  collectionData: CollectionData | null;
+  collectionData: CollectionData;
+  collectionSimpleData: CollectionSimple;
 }
 
 export default function AdminCollectionEditPage({
   collectionId,
   collectionData,
+  collectionSimpleData,
 }: Props) {
   const { modal, showModal } = useModal();
   const { progress, showProgress, hideProgress } = useProgress();
   const { register, handleSubmit, reset, control, setValue, getValues } =
     useForm<FieldValues>();
-  // const collection = useCollectionStore((state) => state.collection);
-  // const init = useCollectionStore((state) => state.init);
-  const { collection, init, updateElement } = useCollectionStore(
+  const { collection, init } = useCollectionStore(
     useShallow((state) => ({
       collection: state.collection,
       init: state.init,
-      updateElement: state.updateElement,
     }))
   );
   const setCurrentId = useCurrentIdStore(
@@ -61,42 +70,37 @@ export default function AdminCollectionEditPage({
   );
   const [assets, setAssets] = useState<CollectionAssets>({
     thumbnail: { file: null },
-    share: {
-      file: null,
-      url: "https://images.unsplash.com/photo-1719328641025-3cb76ba87a97?q=80&w=3688&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
+    share: { file: null },
   });
-  const publishOption = {
-    Public: "public",
-    Private: "private",
-  };
 
   useEffect(() => {
+    console.log(collectionData);
     // init
-    if (collectionData) {
-      const publish = collectionData.metadata.publish
-        ? publishOption.Public
-        : publishOption.Private;
+    const publish = collectionData.metadata.publish
+      ? publishOption.Public
+      : publishOption.Private;
 
-      init(collectionData);
-      reset({
-        publish: publish,
-      });
-      setAssets((current) => {
-        return {
-          thumbnail: {
-            ...current.thumbnail,
-            // url: collectionData.metadata.shareImg.url,
-            // key: collectionData.metadata.shareImg.key,
-          },
-          share: {
-            ...current.share,
-            url: collectionData.metadata.shareImg.url,
-            key: collectionData.metadata.shareImg.key,
-          },
-        };
-      });
-    }
+    init({
+      collection: collectionData.collection,
+    });
+    reset({
+      publish,
+    });
+    setAssets((current) => {
+      return {
+        ...current,
+        thumbnail: {
+          ...current.thumbnail,
+          url: collectionSimpleData?.thumbnail.url,
+          key: collectionSimpleData?.thumbnail.key,
+        },
+        share: {
+          ...current.share,
+          url: collectionData.metadata.shareImg.url,
+          key: collectionData.metadata.shareImg.key,
+        },
+      };
+    });
   }, []);
 
   const handleInvokeCollectionModal = async () => {
@@ -128,41 +132,139 @@ export default function AdminCollectionEditPage({
     showModal({
       title: "Publish Collection",
       children: modalContent,
-      actionLabel: "Create",
-      action: handleSubmit(handleSubmitCollectionData),
+      actionLabel: "Publish",
+      action: handleSubmit(handleSubmitCollection),
     });
   };
 
-  const handleSubmitCollectionData = async (data: FieldValues) => {
-    const newCollection = [...collection];
+  const handleUploadMetaImage = async (
+    assets: CollectionAssets
+  ): Promise<CollectionAssets> => {
+    // 배열로 변환하여 entries를 저장
+    const entries = Object.entries(assets);
 
-    const response = newCollection.map(async (element, elementIdx) => {
-      if (element.elementName === "img") {
-        const response = element.content.image
-          .filter(({ file }) => file !== null)
-          .map(async (img) => {
-            const { key, url, file } = img;
-            const result = await handleUploadImage({ key, preview: url, file });
+    // for of 루프를 사용하여 순차적으로 작업 처리
+    for (const [objKey, value] of entries) {
+      const { key, url, file } = value;
+      const result = await handleUploadImage({ key, preview: url, file });
 
-            return { key: result!.key, url: result!.url, file: null };
-          });
-
-        await Promise.all(response).then((imgArr) => {
-          newCollection[elementIdx] = {
-            ...newCollection[elementIdx],
-            content: {
-              ...newCollection[elementIdx].content,
-              image: [...imgArr],
-            },
-          } as ImageElement;
-        });
+      if (result) {
+        assets[objKey] = { key: result.key, url: result.url, file: null };
       }
+    }
+
+    return assets;
+  };
+
+  const handleUploadCollectionImage = async (
+    collection: CollectionElement[]
+  ): Promise<CollectionElement[]> => {
+    for (let i = 0; i < collection.length; i++) {
+      const element = collection[i];
+      if (element.elementName === "img") {
+        const removeEmpty = element.content.image.filter(
+          ({ file, key }) => file !== null
+        );
+        // removeEmpty가 비어 있는 경우를 처리
+        if (removeEmpty.length === 0) {
+          continue;
+        }
+
+        const imgArr = await Promise.all(
+          removeEmpty.map(async (img) => {
+            console.log(img);
+            const { key, url, file } = img;
+            const result = await handleUploadImage({
+              key,
+              preview: url,
+              file,
+            });
+            return { key: result?.key, url: result?.url, file: null };
+          })
+        );
+
+        console.log(collection[i].id, imgArr);
+        // 새로운 객체를 생성하여 불변성을 유지하고 속성 업데이트
+        collection[i] = {
+          ...element,
+          content: {
+            ...element.content,
+            image: imgArr,
+          },
+        };
+      }
+    }
+
+    return collection;
+  };
+
+  const handleSaveCollection = async (
+    metaImageResult?: CollectionAssets,
+    publish?: boolean
+  ) => {
+    const metadata = {
+      ...collectionData.metadata,
+    };
+
+    const simpleData = {
+      ...collectionSimpleData,
+    };
+
+    if (metaImageResult && publish) {
+      metadata.shareImg = metaImageResult.share;
+      metadata.publish = publish;
+      simpleData.thumbnail = metaImageResult.thumbnail;
+      simpleData.publish = publish;
+    }
+
+    const newCollection = [...collection];
+    const collectionResult = await handleUploadCollectionImage(newCollection);
+
+    // DB 저장
+    await setCollection({
+      id: collectionId,
+      data: {
+        metadata,
+        collection: collectionResult,
+      },
     });
 
-    // 삭제까지 Promise 받고 DB 저장
-    await Promise.all(response).then(() => {
-      console.log(newCollection);
+    await setCollectionSimple({
+      id: collectionId,
+      data: {
+        ...simpleData,
+      },
     });
+  };
+
+  const handleSubmitCollection = async (data: FieldValues) => {
+    console.log(data);
+    const { thumbnail, share } = data;
+    if (!thumbnail[0] || !share[0]) {
+      window.alert("내용을 입력하세요.");
+      return;
+    }
+
+    const newAssets = assets;
+    newAssets.thumbnail.file = thumbnail[0];
+    newAssets.share.file = share[0];
+
+    const metaImageResult = await handleUploadMetaImage(newAssets);
+    console.log(newAssets.share, metaImageResult);
+
+    // Object.entries(metaImageResult).map(([key, value]) => {
+    //   console.log("durl,", key, value);
+    // });
+
+    // return;
+
+    // Modal 데이터 여기서 S3 업로드 및 전역 변수에 반영
+    // Save 함수에 전역 변수 전달
+    await handleSaveCollection(metaImageResult);
+
+    // 삭제한 이미지 리스트 -> S3 이미지 삭제
+
+    // 페이지 이동
   };
 
   const handleUnselectItem = () => {
@@ -184,7 +286,10 @@ export default function AdminCollectionEditPage({
           </Wrapper>
         </CanvasSection>
         <EditorSection>
-          <Editor onInvokeCollectionModal={handleInvokeCollectionModal} />
+          <Editor
+            onInvokeCollectionModal={handleInvokeCollectionModal}
+            onSaveCollection={handleSaveCollection}
+          />
         </EditorSection>
         <Background onClick={handleUnselectItem} />
       </Container>
@@ -205,12 +310,22 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   const { params } = context;
   const collectionId = params?.collectionId as string;
   const collectionData = await getCollection(collectionId);
-  // const port
+  const collectionSimpleData = await getCollectionSimple(collectionId);
+
+  if (!collectionData || !collectionSimpleData) {
+    return {
+      redirect: {
+        destination: PATH.ADMIN,
+        permanent: false,
+      },
+    };
+  }
 
   return {
     props: {
       collectionId,
-      collectionData: collectionData || null,
+      collectionData: collectionData,
+      collectionSimpleData: collectionSimpleData,
     },
   };
 };

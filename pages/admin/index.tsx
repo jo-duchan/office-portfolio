@@ -12,7 +12,11 @@ import {
 } from "@/actions/collection-list-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
 import { colors } from "@/styles/primitive-tokens";
-import { CollectionAssets } from "@/type/collection";
+import {
+  CollectionAssets,
+  CoverElement,
+  CollectionMetadata,
+} from "@/type/collection";
 import { getId, convertTextToSlug } from "@/utils/utils";
 import useModal from "@/hooks/useModal";
 import useProgress from "@/hooks/useProgress";
@@ -121,33 +125,36 @@ export default function AdminHomePage() {
     });
 
     await Promise.all(response).then(async () => {
+      const metadata: CollectionMetadata = {
+        title,
+        description,
+        keyword,
+        shareImg: { file: null },
+        publish: false,
+      };
+
+      const coverElement: CoverElement = {
+        id: getId(),
+        elementName: "cover",
+        option: {
+          titleColor: "000000",
+          descriptionColor: "000000",
+          keywordColor: "000000",
+        },
+        content: {
+          title,
+          description,
+          keyword,
+          desktop: newAssets.desktop,
+          mobile: newAssets.mobile,
+        },
+      };
+
       await setCollection({
         id: kebabCaseTitle,
         data: {
-          metadata: {
-            title,
-            description,
-            keyword,
-            shareImg: { file: null },
-            publish: false,
-          },
-          collection: [
-            {
-              id: getId(),
-              elementName: "cover",
-              option: {
-                titleColor: "000000",
-                descriptionColor: "000000",
-                keywordColor: "000000",
-              },
-              content: {
-                title,
-                description,
-                keyword,
-                ...newAssets,
-              },
-            },
-          ],
+          metadata,
+          collection: [coverElement],
         },
       });
 

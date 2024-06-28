@@ -1,9 +1,19 @@
 import { db } from "@/libs/firebase/firebase-config";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  CollectionMetadata,
+  CollectionElement,
+  ImageElement,
+} from "@/type/collection";
+
+export interface CollectionData {
+  metadata: CollectionMetadata;
+  collection: CollectionElement[];
+}
 
 interface SetParams {
   id: string;
-  data: Object;
+  data: CollectionData;
 }
 
 // Get
@@ -25,6 +35,7 @@ export async function getCollection(id: string) {
 // Set
 export async function setCollection({ id, data }: SetParams) {
   try {
+    console.log(id, data);
     await setDoc(doc(db, "collection", id), data);
   } catch (error) {
     console.error("Failed to set collection", error);

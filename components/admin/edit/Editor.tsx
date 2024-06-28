@@ -1,14 +1,19 @@
 import React from "react";
 import styled from "styled-components";
 import { useForm, type FieldValues } from "react-hook-form";
+import { CollectionAssets } from "@/type/collection";
 import Creator from "@/components/admin/edit/Creator";
 import Controller from "@/components/admin/edit/Controller";
 import Button from "@/components/common/Button";
 interface Props {
   onInvokeCollectionModal: () => Promise<void>;
+  onSaveCollection: (
+    metaImage?: CollectionAssets,
+    publish?: boolean
+  ) => Promise<void>;
 }
 
-function Editor({ onInvokeCollectionModal }: Props) {
+function Editor({ onInvokeCollectionModal, onSaveCollection }: Props) {
   const { register, handleSubmit, watch, reset, setValue, getValues } =
     useForm<FieldValues>();
 
@@ -23,7 +28,12 @@ function Editor({ onInvokeCollectionModal }: Props) {
         getValues={getValues}
       />
       <ButtonSection>
-        <Button.Neutral label="Save" size="small" type="button" />
+        <Button.Neutral
+          label="Save"
+          size="small"
+          type="button"
+          action={() => onSaveCollection()}
+        />
         <Button.Primary label="Publish" size="small" type="submit" />
       </ButtonSection>
     </Container>

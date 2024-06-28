@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useWatch, useForm, type FieldValues } from "react-hook-form";
 import useCollectionStore from "@/stores/collection-store";
@@ -83,8 +83,13 @@ function ImageElement({ data, editable }: ElementProps) {
     }))
   );
   const { id, option, content } = data;
+  const [isPending, setPending] = useState<boolean>(true);
 
   useEffect(() => {
+    if (isPending) {
+      setPending(false);
+      return;
+    }
     if (option.className.column === "column-single") {
       // data.content.image[0].key && deleItemList로 체크해서 나중에 삭제
       updateElement(
@@ -97,7 +102,6 @@ function ImageElement({ data, editable }: ElementProps) {
         id
       );
     }
-
     if (option.className.column === "column-double") {
       updateElement(
         {

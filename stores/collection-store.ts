@@ -56,3 +56,59 @@ const useCollectionStore = create<CollectionState & CollectionAction>()(
 );
 
 export default useCollectionStore;
+
+// const useCollectionStore = create<CollectionState & CollectionAction>()(
+//   (set) => ({
+//     ...defaultState,
+//     init: (data) =>
+//       set((state) => ({
+//         collection: data.collection,
+//       })),
+//     addElement: (element, currentId) =>
+//       set((state) => {
+//         const newCollection = state.collection;
+//         let startPoint = newCollection.length;
+
+//         if (currentId) {
+//           const selectIndex = newCollection.findIndex(
+//             ({ id }) => id === currentId
+//           );
+//           startPoint = selectIndex + 1;
+//         }
+
+//         newCollection.splice(startPoint, 0, element);
+
+//         return {
+//           collection: newCollection,
+//         };
+//       }),
+//     updateElement: (element, currentId) =>
+//       set((state) => {
+//         const selectIndex = state.collection.findIndex(
+//           ({ id }) => id === currentId
+//         );
+
+//         state.collection[selectIndex] = element;
+
+//         return {
+//           collection: state.collection,
+//         };
+//       }),
+//     removeElement: (currentId) =>
+//       set((state) => {
+//         const newCollection = state.collection;
+//         const selectIndex = newCollection.findIndex(
+//           ({ id }) => id === currentId
+//         );
+
+//         newCollection.splice(selectIndex, 1);
+
+//         return {
+//           collection: newCollection,
+//         };
+//       }),
+//     reset: () => set(defaultState),
+//   })
+// );
+
+// export default useCollectionStore;

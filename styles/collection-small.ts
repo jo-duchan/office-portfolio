@@ -80,6 +80,8 @@ const margin = css`
 
 const heading = css`
   .text-element {
+    white-space: pre-line;
+
     h3.font-size-xl {
       font-size: 42px;
       line-height: normal;
@@ -114,6 +116,8 @@ const heading = css`
 
 const text = css`
   .text-element {
+    white-space: pre-line;
+
     p.font-size-xl {
       font-size: 18px;
       line-height: 24px;
