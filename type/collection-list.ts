@@ -8,6 +8,6 @@ export interface CollectionSimple {
   date: number; //Timestamp
 }
 
-export interface Portfolio {
+export interface CollectionList {
   list: CollectionSimple[];
 }

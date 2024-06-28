@@ -4,6 +4,10 @@ import Head from "next/head";
 import styled from "styled-components";
 import { useForm, type FieldValues } from "react-hook-form";
 import { getCollection, setCollection } from "@/actions/collection-action";
+import {
+  getCollectionSimple,
+  setCollectionSimple,
+} from "@/actions/collection-list-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
@@ -57,7 +61,10 @@ export default function AdminCollectionEditPage({
   );
   const [assets, setAssets] = useState<CollectionAssets>({
     thumbnail: { file: null },
-    share: { file: null },
+    share: {
+      file: null,
+      url: "https://images.unsplash.com/photo-1719328641025-3cb76ba87a97?q=80&w=3688&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
   });
   const publishOption = {
     Public: "public",
@@ -74,6 +81,20 @@ export default function AdminCollectionEditPage({
       init(collectionData);
       reset({
         publish: publish,
+      });
+      setAssets((current) => {
+        return {
+          thumbnail: {
+            ...current.thumbnail,
+            // url: collectionData.metadata.shareImg.url,
+            // key: collectionData.metadata.shareImg.key,
+          },
+          share: {
+            ...current.share,
+            url: collectionData.metadata.shareImg.url,
+            key: collectionData.metadata.shareImg.key,
+          },
+        };
       });
     }
   }, []);
@@ -184,6 +205,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   const { params } = context;
   const collectionId = params?.collectionId as string;
   const collectionData = await getCollection(collectionId);
+  // const port
 
   return {
     props: {

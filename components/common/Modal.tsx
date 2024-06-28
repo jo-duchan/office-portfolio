@@ -3,7 +3,6 @@ import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
 import Icons from "@/styles/iconography";
 import Button from "@/components/common/Button";
-import Visibility from "@/components/common/Visibility";
 
 export type SubmitAction = (
   e?: React.BaseSyntheticEvent<object, any, any> | undefined

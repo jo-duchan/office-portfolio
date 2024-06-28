@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { AppProps, AppContext } from "next/app";
 import Header from "@/components/common/Header";
 import { SESSION_COOKIE_NAME } from "@/constants/cookies";

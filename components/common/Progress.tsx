@@ -1,4 +1,3 @@
-import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
 import { colors } from "@/styles/primitive-tokens";
 import Icons from "@/styles/iconography";

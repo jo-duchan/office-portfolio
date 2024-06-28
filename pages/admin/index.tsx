@@ -5,7 +5,11 @@ import { useForm, type FieldValues } from "react-hook-form";
 import { useRouter } from "next/router";
 import PATH from "@/constants/path";
 import { setCollection, getCollection } from "@/actions/collection-action";
-import { checkForDuplicates, setPortfolio } from "@/actions/portfolio-action";
+import {
+  checkForDuplicates,
+  setCollectionSimple,
+  getCollectionSimple,
+} from "@/actions/collection-list-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
 import { colors } from "@/styles/primitive-tokens";
 import { CollectionAssets } from "@/type/collection";
@@ -147,7 +151,7 @@ export default function AdminHomePage() {
         },
       });
 
-      await setPortfolio({
+      await setCollectionSimple({
         id: kebabCaseTitle,
         data: {
           thumbnail: { file: null },
@@ -181,7 +185,7 @@ export default function AdminHomePage() {
 }
 
 export async function getServerSideProps() {
-  // get portfolio
+  // get Collection List
   return {
     props: {},
   };
