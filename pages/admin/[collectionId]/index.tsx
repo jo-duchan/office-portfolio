@@ -238,25 +238,31 @@ export default function AdminCollectionEditPage({
   };
 
   const handleSubmitCollection = async (data: FieldValues) => {
-    console.log(data);
-    const { thumbnail, share } = data;
-    if (!thumbnail[0] || !share[0]) {
+    const publishBoolean = data.publish === "public";
+    const newAssets = assets;
+    const isEmptyThumbnail = !(data.thumbnail[0] || assets.thumbnail.key);
+    const isEmptyShare = !(data.share[0] || assets.share.key);
+
+    if (isEmptyThumbnail || isEmptyShare) {
       window.alert("내용을 입력하세요.");
       return;
     }
 
-    showProgress();
-    const newAssets = assets;
-    newAssets.thumbnail.file = thumbnail[0];
-    newAssets.share.file = share[0];
+    if (data.thumbnail[0]) {
+      newAssets.thumbnail.file = data.thumbnail[0];
+    }
+    if (data.share[0]) {
+      newAssets.share.file = data.share[0];
+    }
 
+    showProgress();
     const metaImageResult = await handleUploadMetaImage(newAssets);
 
     // Modal 데이터 여기서 S3 업로드 및 전역 변수에 반영
     // Save 함수에 전역 변수 전달
     await handleSaveCollection({
       metaImageResult,
-      publish: data.publish,
+      publish: publishBoolean,
       isProgrss: false,
     });
 

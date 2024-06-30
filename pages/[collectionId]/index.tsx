@@ -36,6 +36,7 @@ export const getStaticPaths = (async () => {
       },
     };
   }
+  console.log(simpleList);
 
   const paths = simpleList.map((collection) => {
     const collectionId = collection.title as string;

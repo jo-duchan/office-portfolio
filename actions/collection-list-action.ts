@@ -31,9 +31,9 @@ export async function getCollectionPublicList() {
   try {
     // pagination 작업 필요
     const q = query(
-      collection(db, "collection-list")
-      // where("publish", "==", true),
-      // orderBy("order")
+      collection(db, "collection-list"),
+      where("publish", "==", true),
+      orderBy("order")
     );
     const querySnapshot = await getDocs(q);
 
