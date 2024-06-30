@@ -28,6 +28,7 @@ import { useRouter } from "next/router";
 import PATH from "@/constants/path";
 import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
+import collectionStyle from "@/styles/collection-style";
 import Editor from "@/components/admin/edit/Editor";
 import PreviewModeChanger from "@/components/admin/edit/PreviewModeChanger";
 import ImageGroup from "@/components/common/ImageGroup";
@@ -369,6 +370,7 @@ const Wrapper = styled.div`
   pointer-events: none;
 
   & .canvas {
+    ${collectionStyle};
     width: ${({ theme }) =>
       theme.mediaQuery === "small" ? "360px" : "1440px"};
     height: 870px;

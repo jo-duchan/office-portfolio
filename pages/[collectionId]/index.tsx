@@ -1,10 +1,14 @@
 import React from "react";
 import * as ReactDOMServer from "react-dom/server";
+import styled from "styled-components";
 import { GetStaticPropsContext, GetStaticPaths } from "next";
 import { getCollectionList } from "@/actions/collection-list-action";
 import { getCollection } from "@/actions/collection-action";
 import { CollectionData } from "@/type/collection";
 import PATH from "@/constants/path";
+import media from "@/styles/media";
+import collectionLargeStyle from "@/styles/collection-large";
+import collectionSmallStyle from "@/styles/collection-small";
 import Renderer from "@/components/common/Renderer";
 
 interface Props {
@@ -16,7 +20,9 @@ export default function PortfolioDetailViewPage({
   collectionId,
   collection,
 }: Props) {
-  return <div dangerouslySetInnerHTML={{ __html: collection }}></div>;
+  return (
+    <Container dangerouslySetInnerHTML={{ __html: collection }}></Container>
+  );
 }
 
 export const getStaticPaths = (async () => {
@@ -56,14 +62,24 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     };
   }
 
-  const test = ReactDOMServer.renderToStaticMarkup(
+  const collection = ReactDOMServer.renderToStaticMarkup(
     <Renderer data={collectionData.collection} editable={false} />
   );
 
   return {
     props: {
       collectionId,
-      collection: test,
+      collection,
     },
   };
 };
+
+const Container = styled.div`
+  min-width: 1440px;
+  ${collectionLargeStyle};
+
+  ${media.small`
+    min-width: initial;
+    ${collectionSmallStyle};
+  `};
+`;
