@@ -1,5 +1,14 @@
 import { db } from "@/libs/firebase/firebase-config";
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  query,
+  where,
+  orderBy,
+} from "firebase/firestore";
 import { CollectionSimple } from "@/type/collection-list";
 
 interface SetParams {
@@ -11,7 +20,24 @@ export async function getCollectionList() {
   try {
     // pagination 작업 필요
     const querySnapshot = await getDocs(collection(db, "collection-list"));
-    console.log("Get List", querySnapshot);
+
+    return querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+  } catch (error) {
+    console.error("Failed to get collection list data", error);
+  }
+}
+
+export async function getCollectionPublicList() {
+  try {
+    // pagination 작업 필요
+    const q = query(
+      collection(db, "collection-list")
+      // where("publish", "==", true),
+      // orderBy("order")
+    );
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map((doc) => ({ ...doc.data() }));
   } catch (error) {
     console.error("Failed to get collection list data", error);
   }

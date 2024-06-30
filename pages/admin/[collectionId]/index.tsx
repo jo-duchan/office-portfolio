@@ -14,7 +14,7 @@ import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
 import Renderer from "@/components/common/Renderer";
 import {
-  CollectionMetadata,
+  CollectionData,
   CollectionElement,
   ImageElement,
 } from "@/type/collection";
@@ -37,11 +37,6 @@ export interface SaveCollectionParams {
   metaImageResult?: CollectionAssets;
   publish?: boolean;
   isProgrss?: boolean;
-}
-
-export interface CollectionData {
-  metadata: CollectionMetadata;
-  collection: CollectionElement[];
 }
 
 interface Props {

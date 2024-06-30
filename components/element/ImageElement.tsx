@@ -40,7 +40,7 @@ function ImageBase({
   }, [imgInput]);
 
   if (!editable && imgData.url) {
-    <img src={imgData.url} />;
+    return <img src={imgData.url} />;
   }
 
   if (editable && imgData.url) {

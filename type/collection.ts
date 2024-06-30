@@ -87,3 +87,8 @@ export type CollectionElement =
 export interface CollectionState {
   collection: CollectionElement[];
 }
+
+export interface CollectionData {
+  metadata: CollectionMetadata;
+  collection: CollectionElement[];
+}
