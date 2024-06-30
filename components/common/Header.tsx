@@ -33,7 +33,7 @@ function Header({ sessionCookie }: Props) {
   };
 
   const handleMovePage = (path: string) => {
-    console.log(path);
+    router.push(path);
   };
 
   const renderAdminMenu = () => {
@@ -41,7 +41,9 @@ function Header({ sessionCookie }: Props) {
       return (
         <>
           <Divider />
-          <MenuItem>Admin Home</MenuItem>
+          <MenuItem onClick={() => handleMovePage(PATH.ADMIN)}>
+            Admin Home
+          </MenuItem>
           <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
         </>
       );
