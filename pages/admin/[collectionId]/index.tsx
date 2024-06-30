@@ -24,6 +24,7 @@ import { CollectionSimple } from "@/type/collection-list";
 import useModal from "@/hooks/useModal";
 import useProgress from "@/hooks/useProgress";
 import { publishOption } from "@/constants/metadata-option";
+import { useRouter } from "next/router";
 import PATH from "@/constants/path";
 import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
@@ -31,12 +32,11 @@ import Editor from "@/components/admin/edit/Editor";
 import PreviewModeChanger from "@/components/admin/edit/PreviewModeChanger";
 import ImageGroup from "@/components/common/ImageGroup";
 import CheckGroup from "@/components/admin/edit/CheckGroup";
-import { Image } from "@/type/common";
 
-export interface MetaAssets {
-  [key: string]: Image;
-  share: Image;
-  thumbnail: Image;
+export interface SaveCollectionParams {
+  metaImageResult?: CollectionAssets;
+  publish?: boolean;
+  isProgrss?: boolean;
 }
 
 export interface CollectionData {
@@ -55,6 +55,7 @@ export default function AdminCollectionEditPage({
   collectionData,
   collectionSimpleData,
 }: Props) {
+  const router = useRouter();
   const { modal, showModal } = useModal();
   const { progress, showProgress, hideProgress } = useProgress();
   const { register, handleSubmit, reset, control, setValue, getValues } =
@@ -140,7 +141,6 @@ export default function AdminCollectionEditPage({
   const handleUploadMetaImage = async (
     assets: CollectionAssets
   ): Promise<CollectionAssets> => {
-    // 배열로 변환하여 entries를 저장
     const entries = Object.entries(assets);
 
     // for of 루프를 사용하여 순차적으로 작업 처리
@@ -163,17 +163,19 @@ export default function AdminCollectionEditPage({
       const element = collection[i];
       if (element.elementName === "img") {
         const removeEmpty = element.content.image.filter(
-          ({ file, key }) => file !== null
+          ({ file, key }) => !(file === null && key === undefined)
         );
-        // removeEmpty가 비어 있는 경우를 처리
+
         if (removeEmpty.length === 0) {
           continue;
         }
 
         const imgArr = await Promise.all(
           removeEmpty.map(async (img) => {
-            console.log(img);
             const { key, url, file } = img;
+            if (file === null) {
+              return { key: key, url: url, file: null };
+            }
             const result = await handleUploadImage({
               key,
               preview: url,
@@ -183,7 +185,6 @@ export default function AdminCollectionEditPage({
           })
         );
 
-        console.log(collection[i].id, imgArr);
         // 새로운 객체를 생성하여 불변성을 유지하고 속성 업데이트
         collection[i] = {
           ...element,
@@ -198,10 +199,12 @@ export default function AdminCollectionEditPage({
     return collection;
   };
 
-  const handleSaveCollection = async (
-    metaImageResult?: CollectionAssets,
-    publish?: boolean
-  ) => {
+  const handleSaveCollection = async ({
+    metaImageResult,
+    publish,
+    isProgrss = true,
+  }: SaveCollectionParams) => {
+    isProgrss && showProgress();
     const metadata = {
       ...collectionData.metadata,
     };
@@ -219,7 +222,7 @@ export default function AdminCollectionEditPage({
 
     const newCollection = [...collection];
     const collectionResult = await handleUploadCollectionImage(newCollection);
-
+    // 삭제한 이미지 리스트 -> S3 이미지 삭제
     // DB 저장
     await setCollection({
       id: collectionId,
@@ -235,6 +238,7 @@ export default function AdminCollectionEditPage({
         ...simpleData,
       },
     });
+    isProgrss && hideProgress();
   };
 
   const handleSubmitCollection = async (data: FieldValues) => {
@@ -245,25 +249,24 @@ export default function AdminCollectionEditPage({
       return;
     }
 
+    showProgress();
     const newAssets = assets;
     newAssets.thumbnail.file = thumbnail[0];
     newAssets.share.file = share[0];
 
     const metaImageResult = await handleUploadMetaImage(newAssets);
-    console.log(newAssets.share, metaImageResult);
-
-    // Object.entries(metaImageResult).map(([key, value]) => {
-    //   console.log("durl,", key, value);
-    // });
-
-    // return;
 
     // Modal 데이터 여기서 S3 업로드 및 전역 변수에 반영
     // Save 함수에 전역 변수 전달
-    await handleSaveCollection(metaImageResult);
+    await handleSaveCollection({
+      metaImageResult,
+      publish: data.publish,
+      isProgrss: false,
+    });
 
     // 삭제한 이미지 리스트 -> S3 이미지 삭제
-
+    hideProgress();
+    router.push(PATH.ADMIN);
     // 페이지 이동
   };
 

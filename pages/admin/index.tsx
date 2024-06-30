@@ -26,6 +26,14 @@ import TextArea from "@/components/common/TextArea";
 import ImageGroup from "@/components/common/ImageGroup";
 import ChipGroup from "@/components/common/ChipGroup";
 
+interface SaveCollectionParams {
+  id: string;
+  title: string;
+  description: string;
+  keyword: string;
+  newAssets: CollectionAssets;
+}
+
 export default function AdminHomePage() {
   const router = useRouter();
   const { modal, showModal } = useModal();
@@ -37,6 +45,76 @@ export default function AdminHomePage() {
     mobile: { file: null },
   });
   const [currentId, setCurrentId] = useState<string>();
+
+  const handleUploadCoverImage = async (
+    assets: CollectionAssets
+  ): Promise<CollectionAssets> => {
+    const entries = Object.entries(assets);
+
+    // for of 루프를 사용하여 순차적으로 작업 처리
+    for (const [objKey, value] of entries) {
+      const { key, url, file } = value;
+      const result = await handleUploadImage({ key, preview: url, file });
+
+      if (result) {
+        assets[objKey] = { key: result.key, url: result.url, file: null };
+      }
+    }
+
+    return assets;
+  };
+
+  const handleSaveCollection = async ({
+    id,
+    title,
+    description,
+    keyword,
+    newAssets,
+  }: SaveCollectionParams) => {
+    const metadata: CollectionMetadata = {
+      title,
+      description,
+      keyword,
+      shareImg: { file: null },
+      publish: false,
+    };
+
+    const coverElement: CoverElement = {
+      id: getId(),
+      elementName: "cover",
+      option: {
+        titleColor: "000000",
+        descriptionColor: "000000",
+        keywordColor: "000000",
+      },
+      content: {
+        title,
+        description,
+        keyword,
+        desktop: newAssets.desktop,
+        mobile: newAssets.mobile,
+      },
+    };
+
+    await setCollection({
+      id,
+      data: {
+        metadata,
+        collection: [coverElement],
+      },
+    });
+
+    await setCollectionSimple({
+      id,
+      data: {
+        thumbnail: { file: null },
+        title,
+        order: null,
+        publish: false,
+        date: Date.now(),
+      },
+    });
+  };
 
   const handleInvokeCollectionModal = async (id?: string) => {
     if (id) {
@@ -114,64 +192,18 @@ export default function AdminHomePage() {
     newAssets.desktop.file = desktop[0];
     newAssets.mobile.file = mobile[0];
 
-    const response = Object.entries(newAssets).map(async ([objKey, value]) => {
-      const { key, url, file } = value;
+    const coverImageResult = await handleUploadCoverImage(newAssets);
 
-      const result = await handleUploadImage({ key, preview: url, file });
-
-      if (result) {
-        newAssets[objKey] = { key: result.key, url: result.url, file: null };
-      }
+    await handleSaveCollection({
+      id: kebabCaseTitle,
+      title,
+      description,
+      keyword,
+      newAssets: coverImageResult,
     });
 
-    await Promise.all(response).then(async () => {
-      const metadata: CollectionMetadata = {
-        title,
-        description,
-        keyword,
-        shareImg: { file: null },
-        publish: false,
-      };
-
-      const coverElement: CoverElement = {
-        id: getId(),
-        elementName: "cover",
-        option: {
-          titleColor: "000000",
-          descriptionColor: "000000",
-          keywordColor: "000000",
-        },
-        content: {
-          title,
-          description,
-          keyword,
-          desktop: newAssets.desktop,
-          mobile: newAssets.mobile,
-        },
-      };
-
-      await setCollection({
-        id: kebabCaseTitle,
-        data: {
-          metadata,
-          collection: [coverElement],
-        },
-      });
-
-      await setCollectionSimple({
-        id: kebabCaseTitle,
-        data: {
-          thumbnail: { file: null },
-          title,
-          order: null,
-          publish: false,
-          date: Date.now(),
-        },
-      });
-
-      hideProgress();
-      router.push(`${PATH.ADMIN}/${kebabCaseTitle}`);
-    });
+    hideProgress();
+    router.push(`${PATH.ADMIN}/${kebabCaseTitle}`);
   };
 
   return (
