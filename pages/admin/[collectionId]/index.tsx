@@ -9,8 +9,10 @@ import {
   setCollectionSimple,
 } from "@/actions/collection-list-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
+import { deleteImagesFromS3 } from "@/actions/img-delete-actions";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
+import useDeleteImagesStore from "@/stores/delete-images-store";
 import { useShallow } from "zustand/react/shallow";
 import Renderer from "@/components/common/Renderer";
 import { CollectionData, CollectionElement } from "@/type/collection";
@@ -60,13 +62,18 @@ export default function AdminCollectionEditPage({
   const setCurrentId = useCurrentIdStore(
     useShallow((state) => state.setCurrentId)
   );
+  const { imageKeys, resetKeys } = useDeleteImagesStore(
+    useShallow((state) => ({
+      imageKeys: state.imageKeys,
+      resetKeys: state.resetKeys,
+    }))
+  );
   const [assets, setAssets] = useState<CollectionAssets>({
     thumbnail: { file: null },
     share: { file: null },
   });
 
   useEffect(() => {
-    console.log(collectionData);
     // init
     const publish = collectionData.metadata.publish
       ? publishOption.Public
@@ -212,8 +219,7 @@ export default function AdminCollectionEditPage({
 
     const newCollection = [...collection];
     const collectionResult = await handleUploadCollectionImage(newCollection);
-    // 삭제한 이미지 리스트 -> S3 이미지 삭제
-    // DB 저장
+
     await setCollection({
       id: collectionId,
       data: {
@@ -228,6 +234,11 @@ export default function AdminCollectionEditPage({
         ...simpleData,
       },
     });
+
+    if (imageKeys.length > 0) {
+      await deleteImagesFromS3(imageKeys);
+    }
+
     isProgrss && hideProgress();
   };
 

@@ -35,7 +35,6 @@ export async function getCollection(id: string) {
 // Set
 export async function setCollection({ id, data }: SetParams) {
   try {
-    console.log(id, data);
     await setDoc(doc(db, "collection", id), data);
   } catch (error) {
     console.error("Failed to set collection", error);

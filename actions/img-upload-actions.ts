@@ -62,7 +62,6 @@ export async function handleUploadImage({
     url = convertImageUrl(uploadRes?.url);
     preview && URL.revokeObjectURL(preview);
   }
-  console.log(key, url, response);
 
   return { key: response?.key, url };
 }

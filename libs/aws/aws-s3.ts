@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectsCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const accessKeyId = process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID as string;
@@ -26,4 +30,26 @@ export async function createPresignedUrl(key: string) {
   });
 
   return url;
+}
+
+type DeleteParams = { Key: string }[];
+
+export async function deleteObjectsFromS3(objects: DeleteParams) {
+  const command = new DeleteObjectsCommand({
+    Bucket: bucket,
+    Delete: {
+      Objects: objects,
+    },
+  });
+
+  try {
+    const { Deleted } = await client.send(command);
+
+    return {
+      length: Deleted?.length,
+      key: Deleted?.map((d) => d.Key),
+    };
+  } catch (err) {
+    console.error(err);
+  }
 }

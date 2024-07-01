@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 import { useWatch, useForm, type FieldValues } from "react-hook-form";
 import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
+import useDeleteImagesStore from "@/stores/delete-images-store";
 import { useShallow } from "zustand/react/shallow";
 import { objectToString, checkImageFileSize } from "@/utils/utils";
 import { type ImageElement } from "@/type/collection";
@@ -82,6 +83,9 @@ function ImageElement({ data, editable }: ElementProps) {
       setCurrentId: state.setCurrentId,
     }))
   );
+  const setImageKeys = useDeleteImagesStore(
+    useShallow((state) => state.setImageKeys)
+  );
   const { id, option, content } = data;
   const [isPending, setPending] = useState<boolean>(true);
 
@@ -91,7 +95,8 @@ function ImageElement({ data, editable }: ElementProps) {
       return;
     }
     if (option.className.column === "column-single") {
-      // data.content.image[0].key && deleItemList로 체크해서 나중에 삭제
+      data.content.image[1].key && setImageKeys(data.content.image[1].key);
+
       updateElement(
         {
           ...data,
@@ -156,7 +161,14 @@ function ImageElement({ data, editable }: ElementProps) {
 
   const handleRemoveElement = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Backspace") {
-      // key 체크해서 있으면 -> deleItemList 저장 나중에 삭제
+      const isKeys = content.image.filter(({ key }) => key !== undefined);
+
+      if (isKeys.length > 0) {
+        isKeys.forEach(({ key }) => {
+          key && setImageKeys(key);
+        });
+      }
+
       removeElement(id);
       setCurrentId(undefined);
     }

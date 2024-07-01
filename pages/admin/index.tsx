@@ -11,6 +11,8 @@ import {
   getCollectionAllList,
 } from "@/actions/collection-list-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
+import useDeleteImagesStore from "@/stores/delete-images-store";
+import { useShallow } from "zustand/react/shallow";
 import { colors } from "@/styles/primitive-tokens";
 import {
   CollectionAssets,
@@ -54,6 +56,12 @@ export default function AdminHomePage({ simpleList }: Props) {
     desktop: { file: null },
     mobile: { file: null },
   });
+  const { imageKeys, resetKeys } = useDeleteImagesStore(
+    useShallow((state) => ({
+      imageKeys: state.imageKeys,
+      resetKeys: state.resetKeys,
+    }))
+  );
 
   const handleUploadCoverImage = async (
     assets: CollectionAssets
@@ -175,7 +183,7 @@ export default function AdminHomePage({ simpleList }: Props) {
           coverElement.content;
 
         initialKeyword = keyword.split(",");
-        console.log(initialKeyword, desktop, mobile);
+
         reset({
           title,
           description,
@@ -194,8 +202,6 @@ export default function AdminHomePage({ simpleList }: Props) {
     } else {
       reset({});
     }
-
-    console.log(id);
 
     const modalContent = (
       <>

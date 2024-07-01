@@ -53,9 +53,10 @@ function ImageItem({ register, control, item, setValue }: ItemProps) {
   }, [itemData]);
 
   const handleRemoveImage = () => {
-    setValue(item[0], {});
+    setValue(item[0], {
+      key: item[1].key,
+    });
     setUrl(undefined);
-    // key 확인하고 s3 img data 삭제
   };
 
   return (
