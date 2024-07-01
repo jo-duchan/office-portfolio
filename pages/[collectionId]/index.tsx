@@ -2,7 +2,10 @@ import React from "react";
 import * as ReactDOMServer from "react-dom/server";
 import styled from "styled-components";
 import { GetStaticPropsContext, GetStaticPaths } from "next";
-import { getCollectionList } from "@/actions/collection-list-action";
+import {
+  getCollectionAllList,
+  getCollectionPublicList,
+} from "@/actions/collection-list-action";
 import { getCollection } from "@/actions/collection-action";
 import { CollectionData } from "@/type/collection";
 import PATH from "@/constants/path";
@@ -26,12 +29,12 @@ export default function PortfolioDetailViewPage({
 }
 
 export const getStaticPaths = (async () => {
-  const simpleList = await getCollectionList();
+  const simpleList = await getCollectionPublicList();
 
   if (!simpleList) {
     return {
       redirect: {
-        destination: PATH.ADMIN,
+        destination: PATH.ROOT,
         permanent: false,
       },
     };
@@ -79,8 +82,16 @@ const Container = styled.div`
   min-width: 1440px;
   ${collectionLargeStyle};
 
+  .collection-cover {
+    min-height: 1080px;
+  }
+
   ${media.small`
     min-width: initial;
     ${collectionSmallStyle};
+
+    .collection-cover {
+    min-height: 360px;
+  }
   `};
 `;

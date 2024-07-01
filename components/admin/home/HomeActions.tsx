@@ -50,7 +50,7 @@ export default function HomeActions({ onInvokeCollectionModal }: Props) {
 const Container = styled.div`
   display: flex;
   gap: 12px;
-  margin-top: 80px;
+  margin-bottom: 80px;
 `;
 
 const ActionItem = styled.div<StyledProps>`

@@ -8,7 +8,7 @@ import { setCollection, getCollection } from "@/actions/collection-action";
 import {
   checkForDuplicates,
   setCollectionSimple,
-  getCollectionSimple,
+  getCollectionAllList,
 } from "@/actions/collection-list-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
 import { colors } from "@/styles/primitive-tokens";
@@ -16,25 +16,35 @@ import {
   CollectionAssets,
   CoverElement,
   CollectionMetadata,
+  CollectionElement,
+  CollectionData,
 } from "@/type/collection";
+import { CollectionSimple } from "@/type/collection-list";
 import { getId, convertTextToSlug } from "@/utils/utils";
 import useModal from "@/hooks/useModal";
 import useProgress from "@/hooks/useProgress";
 import HomeActions from "@/components/admin/home/HomeActions";
+import PortfolioList from "@/components/admin/home/PortfolioList";
 import TextField from "@/components/common/TextField";
 import TextArea from "@/components/common/TextArea";
 import ImageGroup from "@/components/common/ImageGroup";
 import ChipGroup from "@/components/common/ChipGroup";
 
+interface Props {
+  simpleList: CollectionSimple[];
+}
+
 interface SaveCollectionParams {
   id: string;
+  isFirstTime: boolean;
   title: string;
   description: string;
   keyword: string;
   newAssets: CollectionAssets;
+  collectionData?: CollectionData;
 }
 
-export default function AdminHomePage() {
+export default function AdminHomePage({ simpleList }: Props) {
   const router = useRouter();
   const { modal, showModal } = useModal();
   const { progress, showProgress, hideProgress } = useProgress();
@@ -44,14 +54,12 @@ export default function AdminHomePage() {
     desktop: { file: null },
     mobile: { file: null },
   });
-  const [currentId, setCurrentId] = useState<string>();
 
   const handleUploadCoverImage = async (
     assets: CollectionAssets
   ): Promise<CollectionAssets> => {
     const entries = Object.entries(assets);
 
-    // for of 루프를 사용하여 순차적으로 작업 처리
     for (const [objKey, value] of entries) {
       const { key, url, file } = value;
       const result = await handleUploadImage({ key, preview: url, file });
@@ -66,66 +74,128 @@ export default function AdminHomePage() {
 
   const handleSaveCollection = async ({
     id,
+    isFirstTime,
     title,
     description,
     keyword,
     newAssets,
+    collectionData,
   }: SaveCollectionParams) => {
-    const metadata: CollectionMetadata = {
-      title,
-      description,
-      keyword,
-      shareImg: { file: null },
-      publish: false,
-    };
+    let metadata: CollectionMetadata;
+    let elementList: CollectionElement[] = [];
+    let coverElemet: CoverElement;
 
-    const coverElement: CoverElement = {
-      id: getId(),
-      elementName: "cover",
-      option: {
-        titleColor: "000000",
-        descriptionColor: "000000",
-        keywordColor: "000000",
-      },
-      content: {
+    if (collectionData) {
+      metadata = {
+        ...collectionData.metadata,
         title,
         description,
         keyword,
-        desktop: newAssets.desktop,
-        mobile: newAssets.mobile,
-      },
-    };
+      };
+
+      elementList = collectionData.collection;
+      coverElemet = elementList.find(
+        ({ elementName }) => elementName === "cover"
+      ) as CoverElement;
+      coverElemet = {
+        ...coverElemet,
+        content: {
+          title,
+          description,
+          keyword,
+          desktop: newAssets.desktop,
+          mobile: newAssets.mobile,
+        },
+      };
+      elementList[0] = coverElemet;
+    } else {
+      metadata = {
+        title,
+        description,
+        keyword,
+        shareImg: { file: null },
+        publish: false,
+      };
+      coverElemet = {
+        id: getId(),
+        elementName: "cover",
+        option: {
+          titleColor: "000000",
+          descriptionColor: "000000",
+          keywordColor: "000000",
+        },
+        content: {
+          title,
+          description,
+          keyword,
+          desktop: newAssets.desktop,
+          mobile: newAssets.mobile,
+        },
+      };
+
+      elementList.push(coverElemet);
+    }
 
     await setCollection({
       id,
       data: {
         metadata,
-        collection: [coverElement],
+        collection: [...elementList],
       },
     });
 
-    await setCollectionSimple({
-      id,
-      data: {
-        thumbnail: { file: null },
-        title,
-        order: null,
-        publish: false,
-        date: Date.now(),
-      },
-    });
+    if (isFirstTime) {
+      await setCollectionSimple({
+        id,
+        data: {
+          thumbnail: { file: null },
+          title,
+          order: null,
+          publish: false,
+          date: Date.now(),
+        },
+      });
+    }
   };
 
   const handleInvokeCollectionModal = async (id?: string) => {
+    let initialKeyword: string[] = [];
+    let collectionData: CollectionData | undefined;
     if (id) {
-      // id가 있으면 DB 조회 및 데이터 내려받기
-      // const response = await
-      // reset()
-      // setAssets();
-      // setCurrentId(id)
+      showProgress();
+      const result = await getCollection(id);
+
+      if (result) {
+        collectionData = result as CollectionData;
+        const coverElement: CoverElement = result.collection.find(
+          ({ elementName }: CollectionElement) => elementName === "cover"
+        );
+
+        const { desktop, mobile, title, description, keyword } =
+          coverElement.content;
+
+        initialKeyword = keyword.split(",");
+        console.log(initialKeyword, desktop, mobile);
+        reset({
+          title,
+          description,
+          keyword,
+        });
+
+        setAssets((current) => {
+          const newAssets = current;
+          newAssets.desktop = desktop;
+          newAssets.mobile = mobile;
+
+          return { ...newAssets };
+        });
+      }
+      hideProgress();
     } else {
       reset({});
     }
+
+    console.log(id);
 
     const modalContent = (
       <>
@@ -147,14 +217,14 @@ export default function AdminHomePage() {
           register={register}
           control={control}
           setValue={setValue}
-          items={Object.entries(assets)}
+          items={assets}
         />
         <ChipGroup
           label="Keyword"
           name="keyword"
           register={register}
           setValue={setValue}
-          initalValue={[]}
+          initalValue={initialKeyword}
         />
       </>
     );
@@ -163,14 +233,22 @@ export default function AdminHomePage() {
       title: `${id ? "Collection" : "New Collection"}`,
       children: modalContent,
       actionLabel: "Create",
-      action: handleSubmit(handleSubmitCollectionData),
+      action: handleSubmit((data) =>
+        handleSubmitCollectionData(data, id, collectionData)
+      ),
     });
   };
 
-  const handleSubmitCollectionData = async (data: FieldValues) => {
+  const handleSubmitCollectionData = async (
+    data: FieldValues,
+    id?: string,
+    collectionData?: CollectionData
+  ) => {
     const { title, description, desktop, mobile, keyword } = data;
+    const isEmptyDesktop = !(desktop[0] || assets.desktop.key);
+    const isEmptyMobile = !(mobile[0] || assets.mobile.key);
 
-    if (!title || !description || !desktop[0] || !mobile[0] || !keyword) {
+    if (!title || !description || !keyword || isEmptyDesktop || isEmptyMobile) {
       window.alert("내용을 입력하세요.");
       return;
     }
@@ -178,28 +256,35 @@ export default function AdminHomePage() {
     const kebabCaseTitle = convertTextToSlug(title);
     let isDuplicate: boolean | undefined;
 
-    if (!currentId) {
+    if (!id) {
       isDuplicate = await checkForDuplicates(kebabCaseTitle);
     }
 
-    if (isDuplicate && !currentId) {
+    if (isDuplicate && !id) {
       window.alert("동일한 프로젝트 제목이 존재합니다.");
       return;
     }
 
-    showProgress();
     const newAssets = assets;
-    newAssets.desktop.file = desktop[0];
-    newAssets.mobile.file = mobile[0];
+    if (desktop[0]) {
+      newAssets.desktop.file = desktop[0];
+    }
 
+    if (mobile[0]) {
+      newAssets.mobile.file = mobile[0];
+    }
+
+    showProgress();
     const coverImageResult = await handleUploadCoverImage(newAssets);
 
     await handleSaveCollection({
-      id: kebabCaseTitle,
+      id: id || kebabCaseTitle,
+      isFirstTime: id === undefined,
       title,
       description,
       keyword,
       newAssets: coverImageResult,
+      collectionData,
     });
 
     hideProgress();
@@ -214,7 +299,10 @@ export default function AdminHomePage() {
       <Container>
         <Wrapper>
           <HomeActions onInvokeCollectionModal={handleInvokeCollectionModal} />
-          {/* portfolio */}
+          <PortfolioList
+            simpleList={simpleList}
+            onInvokeCollectionModal={handleInvokeCollectionModal}
+          />
         </Wrapper>
       </Container>
       {modal}
@@ -225,8 +313,12 @@ export default function AdminHomePage() {
 
 export async function getServerSideProps() {
   // get Collection List
+  const simpleList = await getCollectionAllList();
+
   return {
-    props: {},
+    props: {
+      simpleList: simpleList || [],
+    },
   };
 }
 
@@ -237,9 +329,14 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   background-color: ${colors.neutral[50]};
+  overflow: hidden;
 `;
 
 const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
   max-width: 1200px;
   width: 100%;
+  height: 100%;
+  padding-block: 80px;
 `;

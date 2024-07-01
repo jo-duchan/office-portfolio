@@ -12,6 +12,7 @@
     "@aws-sdk/client-s3": "^3.592.0",
     "@aws-sdk/s3-request-presigner": "^3.592.0",
     "cookies-next": "^4.2.1",
+    "date-fns": "^3.6.0",
     "firebase": "^10.12.1",
     "immer": "^10.1.1",
     "next": "14.2.3",

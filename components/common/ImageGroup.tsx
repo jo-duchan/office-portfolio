@@ -12,6 +12,7 @@ import textStyles from "@/styles/typography";
 import Icons from "@/styles/iconography";
 import { checkImageFileSize } from "@/utils/utils";
 import Visibility from "@/components/common/Visibility";
+import { CollectionAssets } from "@/type/collection";
 import { Image } from "@/type/common";
 
 export interface ImageGropItem {
@@ -82,7 +83,7 @@ interface GroupProps {
   label: string;
   register: UseFormRegister<FieldValues>;
   control: Control<FieldValues>;
-  items: [string, Image][];
+  items: CollectionAssets;
   setValue: UseFormSetValue<FieldValues>;
 }
 
@@ -91,9 +92,9 @@ function ImageGroup({ label, items, register, control, setValue }: GroupProps) {
     <Container>
       <Label>{label}</Label>
       <List>
-        {items.map((item, index) => (
+        {Object.entries(items).map((item, index) => (
           <ImageItem
-            key={item[0]}
+            key={index}
             register={register}
             control={control}
             item={item}

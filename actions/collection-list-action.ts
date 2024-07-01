@@ -16,10 +16,12 @@ interface SetParams {
   data: CollectionSimple;
 }
 
-export async function getCollectionList() {
+export async function getCollectionAllList() {
   try {
     // pagination 작업 필요
-    const querySnapshot = await getDocs(collection(db, "collection-list"));
+    const q = query(collection(db, "collection-list"), orderBy("date", "desc"));
+
+    const querySnapshot = await getDocs(q);
 
     return querySnapshot.docs.map((doc) => ({ ...doc.data() }));
   } catch (error) {
@@ -33,6 +35,7 @@ export async function getCollectionPublicList() {
     const q = query(
       collection(db, "collection-list"),
       where("publish", "==", true),
+      orderBy("publish"),
       orderBy("order")
     );
     const querySnapshot = await getDocs(q);

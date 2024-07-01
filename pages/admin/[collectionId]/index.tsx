@@ -13,12 +13,7 @@ import useCollectionStore from "@/stores/collection-store";
 import useCurrentIdStore from "@/stores/current-id-store";
 import { useShallow } from "zustand/react/shallow";
 import Renderer from "@/components/common/Renderer";
-import {
-  CollectionData,
-  CollectionElement,
-  ImageElement,
-} from "@/type/collection";
-
+import { CollectionData, CollectionElement } from "@/type/collection";
 import { CollectionAssets } from "@/type/collection";
 import { CollectionSimple } from "@/type/collection-list";
 import useModal from "@/hooks/useModal";
@@ -108,7 +103,7 @@ export default function AdminCollectionEditPage({
           register={register}
           control={control}
           setValue={setValue}
-          items={Object.entries(assets)}
+          items={assets}
         />
         <ModalCheckGropWrapper>
           <CheckGroup
@@ -139,7 +134,6 @@ export default function AdminCollectionEditPage({
   ): Promise<CollectionAssets> => {
     const entries = Object.entries(assets);
 
-    // for of 루프를 사용하여 순차적으로 작업 처리
     for (const [objKey, value] of entries) {
       const { key, url, file } = value;
       const result = await handleUploadImage({ key, preview: url, file });
@@ -209,7 +203,7 @@ export default function AdminCollectionEditPage({
       ...collectionSimpleData,
     };
 
-    if (metaImageResult && publish) {
+    if (metaImageResult && publish !== undefined) {
       metadata.shareImg = metaImageResult.share;
       metadata.publish = publish;
       simpleData.thumbnail = metaImageResult.thumbnail;
@@ -269,7 +263,6 @@ export default function AdminCollectionEditPage({
     // 삭제한 이미지 리스트 -> S3 이미지 삭제
     hideProgress();
     router.push(PATH.ADMIN);
-    // 페이지 이동
   };
 
   const handleUnselectItem = () => {

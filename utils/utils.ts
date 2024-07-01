@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { format } from "date-fns";
 
 export function mapToArray<K, V>(map: Map<K, V>) {
   const convertedArray = Array.from(map.values());
@@ -42,4 +43,8 @@ export function withAlpha(hex: string, alpha: number): string {
   const blue = parseInt(hex.slice(5, 7), 16);
 
   return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+export function timeStampToYYYYMMDD(date: number) {
+  return format(date, "yyyy . MM . dd");
 }
