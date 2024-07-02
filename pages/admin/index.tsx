@@ -11,8 +11,6 @@ import {
   getCollectionAllList,
 } from "@/actions/collection-list-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
-import useDeleteImagesStore from "@/stores/delete-images-store";
-import { useShallow } from "zustand/react/shallow";
 import { colors } from "@/styles/primitive-tokens";
 import {
   CollectionAssets,
@@ -31,6 +29,7 @@ import TextField from "@/components/common/TextField";
 import TextArea from "@/components/common/TextArea";
 import ImageGroup from "@/components/common/ImageGroup";
 import ChipGroup from "@/components/common/ChipGroup";
+import OrderList from "@/components/admin/home/OrderList";
 
 interface Props {
   simpleList: CollectionSimple[];
@@ -56,12 +55,21 @@ export default function AdminHomePage({ simpleList }: Props) {
     desktop: { file: null },
     mobile: { file: null },
   });
-  const { imageKeys, resetKeys } = useDeleteImagesStore(
-    useShallow((state) => ({
-      imageKeys: state.imageKeys,
-      resetKeys: state.resetKeys,
-    }))
-  );
+
+  const handleUpdateOrder = (data: FieldValues) => {
+    console.log(data);
+    // data에서 orders, unorders 받아서, simpleList 복사해서 적용하고 fireStore에 업데이트
+  };
+
+  const handleInvokeOrderModal = () => {
+    // simple list 순회하면서 orders, unorders로 각각 배열로 나누고 sort로 정렬까지해서 OrderList 컴포넌트에 전달
+    showModal({
+      title: "Update Order",
+      children: <OrderList register={register} setValue={setValue} />,
+      actionLabel: "Create",
+      action: handleSubmit(handleUpdateOrder),
+    });
+  };
 
   const handleUploadCoverImage = async (
     assets: CollectionAssets
@@ -308,6 +316,7 @@ export default function AdminHomePage({ simpleList }: Props) {
           <PortfolioList
             simpleList={simpleList}
             onInvokeCollectionModal={handleInvokeCollectionModal}
+            onInvokeOrderModal={handleInvokeOrderModal}
           />
         </Wrapper>
       </Container>

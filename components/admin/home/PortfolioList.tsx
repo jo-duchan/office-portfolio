@@ -13,6 +13,7 @@ import Visibility from "@/components/common/Visibility";
 interface Props {
   simpleList: CollectionSimple[];
   onInvokeCollectionModal: (id?: string) => Promise<void>;
+  onInvokeOrderModal: () => void;
 }
 
 interface StyledProps {
@@ -20,7 +21,11 @@ interface StyledProps {
   $bgColor: string;
 }
 
-function PortfolioList({ simpleList, onInvokeCollectionModal }: Props) {
+function PortfolioList({
+  simpleList,
+  onInvokeCollectionModal,
+  onInvokeOrderModal,
+}: Props) {
   const getPublic = (bool: boolean) => {
     let color = colors.secondary[500];
     let bgColor = colors.secondary[100];
@@ -43,7 +48,8 @@ function PortfolioList({ simpleList, onInvokeCollectionModal }: Props) {
             <Item
               key={convertTextToSlug(item.title)}
               onClick={() =>
-                onInvokeCollectionModal(convertTextToSlug(item.title))
+                // onInvokeCollectionModal(convertTextToSlug(item.title))
+                onInvokeOrderModal()
               }
             >
               <img
@@ -58,7 +64,7 @@ function PortfolioList({ simpleList, onInvokeCollectionModal }: Props) {
                   >
                     {getPublic(item.publish).text}
                   </ItemPublic>
-                  <Visibility visible={item.order !== null}>
+                  <Visibility visible={item.order !== 999}>
                     <ItemOrder>{item.order}</ItemOrder>
                   </Visibility>
                 </ItemInfo>
