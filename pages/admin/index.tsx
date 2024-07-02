@@ -158,7 +158,7 @@ export default function AdminHomePage({ simpleList }: Props) {
         data: {
           thumbnail: { file: null },
           title,
-          order: null,
+          order: 999,
           publish: false,
           date: Date.now(),
         },
