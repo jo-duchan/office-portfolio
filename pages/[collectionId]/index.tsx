@@ -30,7 +30,7 @@ export default function PortfolioDetailViewPage({
 
 export const getStaticPaths = (async () => {
   const simpleList = await getCollectionPublicList();
-  console.log(simpleList);
+
   if (!simpleList) {
     return {
       redirect: {
