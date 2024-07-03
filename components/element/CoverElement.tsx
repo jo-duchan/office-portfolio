@@ -39,8 +39,8 @@ function CoverElement({ data }: Props) {
           ))}
         </ul>
       </div>
-      <img className="collection-large-img" src={desktop.url} />
-      <img className="collection-small-img" src={mobile.url} />
+      <img className="collection-large-img" src={desktop.url} loading="lazy" />
+      <img className="collection-small-img" src={mobile.url} loading="lazy" />
     </Container>
   );
 }

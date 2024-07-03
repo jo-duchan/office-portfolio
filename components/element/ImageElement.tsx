@@ -41,7 +41,7 @@ function ImageBase({
   }, [imgInput]);
 
   if (!editable && imgData.url) {
-    return <img src={imgData.url} />;
+    return <img src={imgData.url} loading="lazy" />;
   }
 
   if (editable && imgData.url) {
