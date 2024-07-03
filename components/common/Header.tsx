@@ -17,7 +17,7 @@ interface UserRouteInfo {
 }
 
 const userRouteInfo: UserRouteInfo = {
-  home: { path: "" },
+  home: { path: PATH.ROOT },
   about: { path: "" },
   work: { path: "" },
   contact: { path: "" },
