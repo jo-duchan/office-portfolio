@@ -2,10 +2,7 @@ import React from "react";
 import * as ReactDOMServer from "react-dom/server";
 import styled from "styled-components";
 import { GetStaticPropsContext, GetStaticPaths } from "next";
-import {
-  getCollectionAllList,
-  getCollectionPublicList,
-} from "@/actions/collection-list-action";
+import { getCollectionPublicList } from "@/actions/collection-list-action";
 import { getCollection } from "@/actions/collection-action";
 import { CollectionData } from "@/type/collection";
 import PATH from "@/constants/path";
@@ -13,16 +10,13 @@ import media from "@/styles/media";
 import collectionLargeStyle from "@/styles/collection-large";
 import collectionSmallStyle from "@/styles/collection-small";
 import Renderer from "@/components/common/Renderer";
+import { convertTextToSlug } from "@/utils/utils";
 
 interface Props {
-  collectionId: string;
   collection: string;
 }
 
-export default function PortfolioDetailViewPage({
-  collectionId,
-  collection,
-}: Props) {
+export default function PortfolioDetailViewPage({ collection }: Props) {
   return (
     <Container dangerouslySetInnerHTML={{ __html: collection }}></Container>
   );
@@ -42,7 +36,7 @@ export const getStaticPaths = (async () => {
 
   const paths = simpleList.map((collection) => {
     const collectionId = collection.title as string;
-    return { params: { collectionId } };
+    return { params: { collectionId: convertTextToSlug(collectionId) } };
   });
 
   return {

@@ -26,7 +26,7 @@ export default function Home({ simpleList }: Props) {
             <div
               key={item.title}
               onClick={() =>
-                router.push(`${PATH.ROOT}/${convertTextToSlug(item.title)}`)
+                router.push(`${PATH.ROOT}${convertTextToSlug(item.title)}`)
               }
             >
               <img src={item.thumbnail.url} />
