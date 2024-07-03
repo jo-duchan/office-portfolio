@@ -40,18 +40,23 @@ export default function AdminAuthPage() {
           label="ID"
           placeholder="아이디를 입력해 주세요."
         />
-        <TextField
-          register={register}
-          name="password"
-          label="Password"
-          placeholder="암호를 입력해 주세요."
-          type="password"
-        />
-        {error && (
-          <ErrorMessage>
-            ID와 비밀번호를 확인하고, 다시 시도해주세요.
-          </ErrorMessage>
-        )}
+        <div>
+          <TextField
+            register={register}
+            name="password"
+            label="Password"
+            placeholder="암호를 입력해 주세요."
+            type="password"
+          />
+          {error && (
+            <ErrorMessage>
+              ID와 비밀번호를 확인하고, 다시 시도해주세요.
+            </ErrorMessage>
+          )}
+        </div>
+        <TextButton onClick={() => router.push(PATH.RESET_PASSWORD)}>
+          비밀번호 변경
+        </TextButton>
       </>
     );
     showModal({
@@ -75,6 +80,19 @@ export default function AdminAuthPage() {
 }
 
 const ErrorMessage = styled.span`
+  display: block;
+  width: 100%;
+  height: 20px;
   ${textStyles.body3.regular};
   color: ${colors.red[400]};
+  margin-top: 12px;
+`;
+
+const TextButton = styled.span`
+  ${textStyles.label2.bold};
+  color: ${colors.neutral[600]};
+  text-decoration-line: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  user-select: none;
 `;

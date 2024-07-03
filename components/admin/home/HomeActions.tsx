@@ -5,6 +5,7 @@ import textStyles from "@/styles/typography";
 
 interface Props {
   onInvokeCollectionModal: (id?: string) => Promise<void>;
+  onInvokeOrderModal: () => void;
 }
 
 interface StyledProps {
@@ -13,9 +14,11 @@ interface StyledProps {
   $activeColor: string;
 }
 
-export default function HomeActions({ onInvokeCollectionModal }: Props) {
+export default function HomeActions({
+  onInvokeCollectionModal,
+  onInvokeOrderModal,
+}: Props) {
   const handleVisualAssetsUpdate = () => {};
-  const handleAccountPasswordUpdate = () => {};
 
   return (
     <Container>
@@ -36,12 +39,12 @@ export default function HomeActions({ onInvokeCollectionModal }: Props) {
         Create New Collection
       </ActionItem>
       <ActionItem
-        onClick={handleAccountPasswordUpdate}
+        onClick={onInvokeOrderModal}
         $bgColor={colors.neutral[100]}
         $color={colors.neutral[500]}
         $activeColor={colors.neutral[200]}
       >
-        Account Password Update
+        Change Collection Order
       </ActionItem>
     </Container>
   );

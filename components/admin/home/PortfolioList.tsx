@@ -14,13 +14,11 @@ import Visibility from "@/components/common/Visibility";
 interface Props {
   simpleList: CollectionSimple[];
   onInvokeCollectionModal: (id?: string) => Promise<void>;
-  onInvokeOrderModal: () => void;
 }
 
 interface ItemProps {
   item: CollectionSimple;
   onInvokeCollectionModal: (id?: string) => Promise<void>;
-  onInvokeOrderModal: () => void;
 }
 
 interface StyledProps {
@@ -28,11 +26,7 @@ interface StyledProps {
   $bgColor: string;
 }
 
-function PortfolioItem({
-  item,
-  onInvokeCollectionModal,
-  onInvokeOrderModal,
-}: ItemProps) {
+function PortfolioItem({ item, onInvokeCollectionModal }: ItemProps) {
   const [isOptionActive, SetIsOptionActive] = useState<boolean>(false);
   const getPublic = (bool: boolean) => {
     let color = colors.secondary[500];
@@ -64,11 +58,6 @@ function PortfolioItem({
     handleHideOption();
   };
 
-  const handleClickOrderButton = () => {
-    onInvokeOrderModal();
-    handleHideOption();
-  };
-
   return (
     <Item
       key={convertTextToSlug(item.title)}
@@ -78,7 +67,6 @@ function PortfolioItem({
       <Visibility visible={isOptionActive}>
         <OptionSection onClick={(e) => e.stopPropagation()}>
           <Option onClick={handleClickDeleteButton}>Delete</Option>
-          <Option onClick={handleClickOrderButton}>Order</Option>
         </OptionSection>
       </Visibility>
       <ThumbnailSection>
@@ -106,11 +94,7 @@ function PortfolioItem({
   );
 }
 
-function PortfolioList({
-  simpleList,
-  onInvokeCollectionModal,
-  onInvokeOrderModal,
-}: Props) {
+function PortfolioList({ simpleList, onInvokeCollectionModal }: Props) {
   return (
     <Container>
       <Title>Portfolio</Title>
@@ -121,7 +105,6 @@ function PortfolioList({
               key={item.title}
               item={item}
               onInvokeCollectionModal={onInvokeCollectionModal}
-              onInvokeOrderModal={onInvokeOrderModal}
             />
           ))}
         </List>

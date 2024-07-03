@@ -357,11 +357,13 @@ export default function AdminHomePage({ simpleList }: Props) {
       </Head>
       <Container>
         <Wrapper>
-          <HomeActions onInvokeCollectionModal={handleInvokeCollectionModal} />
+          <HomeActions
+            onInvokeCollectionModal={handleInvokeCollectionModal}
+            onInvokeOrderModal={handleInvokeOrderModal}
+          />
           <PortfolioList
             simpleList={simpleList}
             onInvokeCollectionModal={handleInvokeCollectionModal}
-            onInvokeOrderModal={handleInvokeOrderModal}
           />
         </Wrapper>
       </Container>
