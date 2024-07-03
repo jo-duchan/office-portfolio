@@ -4,13 +4,19 @@ import styled from "styled-components";
 import { useForm, type FieldValues } from "react-hook-form";
 import { useRouter } from "next/router";
 import PATH from "@/constants/path";
-import { setCollection, getCollection } from "@/actions/collection-action";
+import {
+  setCollection,
+  getCollection,
+  deleteCollection,
+} from "@/actions/collection-action";
 import {
   checkForDuplicates,
   setCollectionSimple,
   getCollectionAllList,
+  deleteCollectionSimple,
 } from "@/actions/collection-list-action";
 import { handleUploadImage } from "@/actions/img-upload-actions";
+import { deleteImagesFromS3 } from "@/actions/img-delete-actions";
 import { colors } from "@/styles/primitive-tokens";
 import {
   CollectionAssets,
@@ -350,6 +356,56 @@ export default function AdminHomePage({ simpleList }: Props) {
     router.push(`${PATH.ADMIN}/${kebabCaseTitle}`);
   };
 
+  const handleDeleteCollection = async (title: string) => {
+    const id = convertTextToSlug(title);
+    const imageKeys: string[] = [];
+
+    if (!window.confirm(`${title}을 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    showProgress();
+    const result = (await getCollection(id)) as CollectionData | undefined;
+
+    if (result) {
+      result.collection.forEach((item) => {
+        if (item.elementName === "img") {
+          item.content.image.forEach((img) => {
+            const { key } = img;
+
+            key && imageKeys.push(key);
+          });
+        }
+
+        if (item.elementName === "cover") {
+          const { desktop, mobile } = item.content;
+
+          desktop.key && imageKeys.push(desktop.key);
+          mobile.key && imageKeys.push(mobile.key);
+        }
+      });
+      const shareImgKey = result.metadata.shareImg.key;
+
+      if (shareImgKey) {
+        imageKeys.push(shareImgKey);
+      }
+
+      const simpleIndex = simpleList.findIndex((item) => item.title === title);
+      const thumbnailKey = simpleList[simpleIndex].thumbnail.key;
+
+      if (thumbnailKey) {
+        imageKeys.push(thumbnailKey);
+      }
+    }
+
+    await deleteImagesFromS3([]);
+    await deleteCollection(convertTextToSlug(id));
+    await deleteCollectionSimple(convertTextToSlug(id));
+    hideProgress();
+
+    router.push(PATH.ADMIN);
+  };
+
   return (
     <>
       <Head>
@@ -364,6 +420,7 @@ export default function AdminHomePage({ simpleList }: Props) {
           <PortfolioList
             simpleList={simpleList}
             onInvokeCollectionModal={handleInvokeCollectionModal}
+            onDeleteCollection={handleDeleteCollection}
           />
         </Wrapper>
       </Container>
@@ -374,7 +431,6 @@ export default function AdminHomePage({ simpleList }: Props) {
 }
 
 export async function getServerSideProps() {
-  // get Collection List
   const simpleList = await getCollectionAllList();
 
   return {

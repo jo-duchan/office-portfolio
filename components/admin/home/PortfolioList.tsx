@@ -14,11 +14,13 @@ import Visibility from "@/components/common/Visibility";
 interface Props {
   simpleList: CollectionSimple[];
   onInvokeCollectionModal: (id?: string) => Promise<void>;
+  onDeleteCollection: (title: string) => void;
 }
 
 interface ItemProps {
   item: CollectionSimple;
   onInvokeCollectionModal: (id?: string) => Promise<void>;
+  onDeleteCollection: (title: string) => void;
 }
 
 interface StyledProps {
@@ -26,7 +28,11 @@ interface StyledProps {
   $bgColor: string;
 }
 
-function PortfolioItem({ item, onInvokeCollectionModal }: ItemProps) {
+function PortfolioItem({
+  item,
+  onInvokeCollectionModal,
+  onDeleteCollection,
+}: ItemProps) {
   const [isOptionActive, SetIsOptionActive] = useState<boolean>(false);
   const getPublic = (bool: boolean) => {
     let color = colors.secondary[500];
@@ -53,8 +59,8 @@ function PortfolioItem({ item, onInvokeCollectionModal }: ItemProps) {
     SetIsOptionActive(false);
   };
 
-  const handleClickDeleteButton = () => {
-    console.log("Delete");
+  const handleClickDeleteButton = (id: string) => {
+    onDeleteCollection(id);
     handleHideOption();
   };
 
@@ -66,7 +72,9 @@ function PortfolioItem({ item, onInvokeCollectionModal }: ItemProps) {
     >
       <Visibility visible={isOptionActive}>
         <OptionSection onClick={(e) => e.stopPropagation()}>
-          <Option onClick={handleClickDeleteButton}>Delete</Option>
+          <Option onClick={() => handleClickDeleteButton(item.title)}>
+            Delete
+          </Option>
         </OptionSection>
       </Visibility>
       <ThumbnailSection>
@@ -94,7 +102,11 @@ function PortfolioItem({ item, onInvokeCollectionModal }: ItemProps) {
   );
 }
 
-function PortfolioList({ simpleList, onInvokeCollectionModal }: Props) {
+function PortfolioList({
+  simpleList,
+  onInvokeCollectionModal,
+  onDeleteCollection,
+}: Props) {
   return (
     <Container>
       <Title>Portfolio</Title>
@@ -105,6 +117,7 @@ function PortfolioList({ simpleList, onInvokeCollectionModal }: Props) {
               key={item.title}
               item={item}
               onInvokeCollectionModal={onInvokeCollectionModal}
+              onDeleteCollection={onDeleteCollection}
             />
           ))}
         </List>

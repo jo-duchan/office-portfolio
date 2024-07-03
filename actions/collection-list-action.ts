@@ -4,12 +4,15 @@ import {
   doc,
   getDoc,
   getDocs,
+  deleteDoc,
   setDoc,
   query,
   where,
   orderBy,
 } from "firebase/firestore";
 import { CollectionSimple } from "@/type/collection-list";
+
+const COLLECTION_SIMPLE_PATH = "collection-list";
 
 interface SetParams {
   id: string;
@@ -19,7 +22,10 @@ interface SetParams {
 export async function getCollectionAllList() {
   try {
     // pagination 작업 필요
-    const q = query(collection(db, "collection-list"), orderBy("date", "desc"));
+    const q = query(
+      collection(db, COLLECTION_SIMPLE_PATH),
+      orderBy("date", "desc")
+    );
 
     const querySnapshot = await getDocs(q);
 
@@ -33,7 +39,7 @@ export async function getCollectionPublicList() {
   try {
     // pagination 작업 필요
     const q = query(
-      collection(db, "collection-list"),
+      collection(db, COLLECTION_SIMPLE_PATH),
       where("publish", "==", true),
       orderBy("publish"),
       orderBy("order")
@@ -48,7 +54,7 @@ export async function getCollectionPublicList() {
 
 export async function setCollectionSimple({ id, data }: SetParams) {
   try {
-    await setDoc(doc(db, "collection-list", id), data);
+    await setDoc(doc(db, COLLECTION_SIMPLE_PATH, id), data);
   } catch (error) {
     console.error("Failed to set collection simple", error);
   }
@@ -56,7 +62,7 @@ export async function setCollectionSimple({ id, data }: SetParams) {
 
 export async function getCollectionSimple(id: string) {
   try {
-    const docRef = doc(db, "collection-list", id);
+    const docRef = doc(db, COLLECTION_SIMPLE_PATH, id);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
@@ -68,11 +74,18 @@ export async function getCollectionSimple(id: string) {
   }
 }
 
-//
+export async function deleteCollectionSimple(id: string) {
+  try {
+    await deleteDoc(doc(db, COLLECTION_SIMPLE_PATH, id));
+  } catch (error) {
+    console.error("Failed to delete collection simple data", error);
+  }
+}
+
 // Check Duplicate
 export async function checkForDuplicates(id: string) {
   try {
-    const docRef = doc(db, "collection-list", id);
+    const docRef = doc(db, COLLECTION_SIMPLE_PATH, id);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {

@@ -237,6 +237,7 @@ export default function AdminCollectionEditPage({
 
     if (imageKeys.length > 0) {
       await deleteImagesFromS3(imageKeys);
+      resetKeys();
     }
 
     isProgrss && hideProgress();
