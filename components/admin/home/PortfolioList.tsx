@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { CollectionSimple } from "@/type/collection-list";
 import {
@@ -8,10 +8,17 @@ import {
 } from "@/utils/utils";
 import { colors, round } from "@/styles/primitive-tokens";
 import textStyles from "@/styles/typography";
+import Icons from "@/styles/iconography";
 import Visibility from "@/components/common/Visibility";
 
 interface Props {
   simpleList: CollectionSimple[];
+  onInvokeCollectionModal: (id?: string) => Promise<void>;
+  onInvokeOrderModal: () => void;
+}
+
+interface ItemProps {
+  item: CollectionSimple;
   onInvokeCollectionModal: (id?: string) => Promise<void>;
   onInvokeOrderModal: () => void;
 }
@@ -21,11 +28,12 @@ interface StyledProps {
   $bgColor: string;
 }
 
-function PortfolioList({
-  simpleList,
+function PortfolioItem({
+  item,
   onInvokeCollectionModal,
   onInvokeOrderModal,
-}: Props) {
+}: ItemProps) {
+  const [isOptionActive, SetIsOptionActive] = useState<boolean>(false);
   const getPublic = (bool: boolean) => {
     let color = colors.secondary[500];
     let bgColor = colors.secondary[100];
@@ -39,39 +47,82 @@ function PortfolioList({
 
     return { color, bgColor, text };
   };
+
+  const handleShowOption = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    SetIsOptionActive(true);
+  };
+
+  const handleHideOption = () => {
+    SetIsOptionActive(false);
+  };
+
+  const handleClickDeleteButton = () => {
+    console.log("Delete");
+    handleHideOption();
+  };
+
+  const handleClickOrderButton = () => {
+    onInvokeOrderModal();
+    handleHideOption();
+  };
+
+  return (
+    <Item
+      key={convertTextToSlug(item.title)}
+      onClick={() => onInvokeCollectionModal(convertTextToSlug(item.title))}
+      onMouseLeave={handleHideOption}
+    >
+      <Visibility visible={isOptionActive}>
+        <OptionSection onClick={(e) => e.stopPropagation()}>
+          <Option onClick={handleClickDeleteButton}>Delete</Option>
+          <Option onClick={handleClickOrderButton}>Order</Option>
+        </OptionSection>
+      </Visibility>
+      <ThumbnailSection>
+        <MoreButton onClick={handleShowOption}>
+          <Icons.more />
+        </MoreButton>
+        <img src={item.thumbnail.url} alt={`${item.title} thumbnail image`} />
+      </ThumbnailSection>
+      <ItemTextContent>
+        <ItemInfo>
+          <ItemPublic
+            $color={getPublic(item.publish).color}
+            $bgColor={getPublic(item.publish).bgColor}
+          >
+            {getPublic(item.publish).text}
+          </ItemPublic>
+          <Visibility visible={item.order !== 999}>
+            <ItemOrder>{item.order}</ItemOrder>
+          </Visibility>
+        </ItemInfo>
+        <ItemTitle>{item.title}</ItemTitle>
+        <ItemCreatedAt>{timeStampToYYYYMMDD(item.date)}</ItemCreatedAt>
+      </ItemTextContent>
+    </Item>
+  );
+}
+
+function PortfolioList({
+  simpleList,
+  onInvokeCollectionModal,
+  onInvokeOrderModal,
+}: Props) {
   return (
     <Container>
       <Title>Portfolio</Title>
       <Visibility visible={simpleList.length > 0}>
         <List>
           {simpleList.map((item) => (
-            <Item
-              key={convertTextToSlug(item.title)}
-              onClick={() =>
-                // onInvokeCollectionModal(convertTextToSlug(item.title))
-                onInvokeOrderModal()
-              }
-            >
-              <img
-                src={item.thumbnail.url}
-                alt={`${item.title} thumbnail image`}
-              />
-              <ItemTextContent>
-                <ItemInfo>
-                  <ItemPublic
-                    $color={getPublic(item.publish).color}
-                    $bgColor={getPublic(item.publish).bgColor}
-                  >
-                    {getPublic(item.publish).text}
-                  </ItemPublic>
-                  <Visibility visible={item.order !== 999}>
-                    <ItemOrder>{item.order}</ItemOrder>
-                  </Visibility>
-                </ItemInfo>
-                <ItemTitle>{item.title}</ItemTitle>
-                <ItemCreatedAt>{timeStampToYYYYMMDD(item.date)}</ItemCreatedAt>
-              </ItemTextContent>
-            </Item>
+            <PortfolioItem
+              key={item.title}
+              item={item}
+              onInvokeCollectionModal={onInvokeCollectionModal}
+              onInvokeOrderModal={onInvokeOrderModal}
+            />
           ))}
         </List>
       </Visibility>
@@ -85,10 +136,8 @@ function PortfolioList({
 export default PortfolioList;
 
 const Container = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden auto;
 `;
 
 const Title = styled.h3`
@@ -105,7 +154,108 @@ const List = styled.ul`
   height: 100%;
 `;
 
+const ThumbnailSection = styled.div`
+  position: relative;
+  width: 100%;
+  height: 234px;
+  border-radius: ${`${round.s}px`};
+  overflow: hidden;
+
+  & img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: ${withAlpha(colors.neutral[900], 0.24)};
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+  }
+`;
+
+const MoreButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: initial;
+  border: initial;
+  outline: initial;
+  background-color: transparent;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+
+  svg path {
+    fill: ${colors.neutral[0]};
+  }
+`;
+
+const OptionSection = styled.div`
+  position: absolute;
+  top: 0;
+  right: 8px;
+  width: 110px;
+  height: fit-content;
+  transform: translate3d(100%, 0, 0);
+  background-color: ${colors.neutral[700]};
+  border: 1px solid ${colors.neutral[600]};
+  border-radius: ${`${round.s}px`};
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 800;
+`;
+
+const Option = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+
+  ${textStyles.label2.medium};
+  color: ${colors.neutral[300]};
+  text-transform: capitalize;
+  cursor: pointer;
+  user-select: none;
+  transition: color 200ms ease-in-out;
+
+  &:hover {
+    color: ${colors.neutral[50]};
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 81.8181%;
+    transform: translate3d(-50%, 0, 0);
+    height: 1px;
+    background-color: ${colors.neutral[600]};
+  }
+
+  &:last-child::before {
+    background-color: transparent;
+  }
+`;
+
 const Item = styled.li`
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -113,18 +263,13 @@ const Item = styled.li`
   height: fit-content;
   cursor: pointer;
   user-select: none;
-  transition: opacity 200ms ease-in-out;
 
-  & img {
-    display: block;
-    width: 100%;
-    height: 234px;
-    object-fit: cover;
-    border-radius: ${`${round.s}px`};
+  &:hover ${ThumbnailSection}::before {
+    opacity: 1;
   }
 
-  &:active {
-    opacity: 0.7;
+  &:hover ${MoreButton} {
+    opacity: 1;
   }
 `;
 

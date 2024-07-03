@@ -47,27 +47,72 @@ interface SaveCollectionParams {
 
 export default function AdminHomePage({ simpleList }: Props) {
   const router = useRouter();
-  const { modal, showModal } = useModal();
+  const { modal, showModal, hideModal } = useModal();
   const { progress, showProgress, hideProgress } = useProgress();
-  const { register, handleSubmit, reset, control, setValue } =
-    useForm<FieldValues>();
+  const {
+    register: collectionRegister,
+    handleSubmit: collectionSubmit,
+    reset: collectionReset,
+    control: collectionControl,
+    setValue: collectionSetValue,
+  } = useForm<FieldValues>();
+  const {
+    register: orderRegister,
+    handleSubmit: orderSubmit,
+    setValue: orderSetValue,
+  } = useForm<FieldValues>();
   const [assets, setAssets] = useState<CollectionAssets>({
     desktop: { file: null },
     mobile: { file: null },
   });
 
-  const handleUpdateOrder = (data: FieldValues) => {
-    console.log(data);
-    // data에서 orders, unorders 받아서, simpleList 복사해서 적용하고 fireStore에 업데이트
+  const handleUpdateOrder = async (data: FieldValues) => {
+    showProgress();
+    const newSimpleList = [...simpleList].filter((item) => item.publish);
+    const orders: string[] = JSON.parse(data.orders);
+    const unorders: string[] = JSON.parse(data.unorders);
+
+    orders.forEach((title, idx) => {
+      const itemIndex = newSimpleList.findIndex((item) => item.title === title);
+      newSimpleList[itemIndex].order = idx + 1;
+    });
+
+    unorders.forEach((title) => {
+      const itemIndex = newSimpleList.findIndex((item) => item.title === title);
+      newSimpleList[itemIndex].order = 999;
+    });
+
+    for (const simpleItem of newSimpleList) {
+      await setCollectionSimple({
+        id: convertTextToSlug(simpleItem.title),
+        data: simpleItem,
+      });
+    }
+    hideProgress();
+    hideModal();
   };
 
   const handleInvokeOrderModal = () => {
-    // simple list 순회하면서 orders, unorders로 각각 배열로 나누고 sort로 정렬까지해서 OrderList 컴포넌트에 전달
+    const initialOrders = [...simpleList]
+      .filter((item) => item.order !== 999 && item.publish)
+      .sort((a, b) => a.order - b.order);
+
+    const initialUnorders = simpleList.filter(
+      (item) => item.order === 999 && item.publish
+    );
+
     showModal({
       title: "Update Order",
-      children: <OrderList register={register} setValue={setValue} />,
-      actionLabel: "Create",
-      action: handleSubmit(handleUpdateOrder),
+      children: (
+        <OrderList
+          initialOrders={initialOrders}
+          initialUnorders={initialUnorders}
+          register={orderRegister}
+          setValue={orderSetValue}
+        />
+      ),
+      actionLabel: "Done",
+      action: orderSubmit(handleUpdateOrder),
     });
   };
 
@@ -192,7 +237,7 @@ export default function AdminHomePage({ simpleList }: Props) {
 
         initialKeyword = keyword.split(",");
 
-        reset({
+        collectionReset({
           title,
           description,
           keyword,
@@ -208,36 +253,36 @@ export default function AdminHomePage({ simpleList }: Props) {
       }
       hideProgress();
     } else {
-      reset({});
+      collectionReset({});
     }
 
     const modalContent = (
       <>
         <TextField
-          register={register}
+          register={collectionRegister}
           name="title"
           label="Title"
           placeholder="프로젝트 제목을 입력하세요."
           disabled={id !== undefined}
         />
         <TextArea
-          register={register}
+          register={collectionRegister}
           name="description"
           label="Description"
           placeholder="프로젝트 설명을 입력하세요."
         />
         <ImageGroup
           label="Cover Image"
-          register={register}
-          control={control}
-          setValue={setValue}
+          register={collectionRegister}
+          control={collectionControl}
+          setValue={collectionSetValue}
           items={assets}
         />
         <ChipGroup
           label="Keyword"
           name="keyword"
-          register={register}
-          setValue={setValue}
+          register={collectionRegister}
+          setValue={collectionSetValue}
           initalValue={initialKeyword}
         />
       </>
@@ -247,7 +292,7 @@ export default function AdminHomePage({ simpleList }: Props) {
       title: `${id ? "Collection" : "New Collection"}`,
       children: modalContent,
       actionLabel: "Create",
-      action: handleSubmit((data) =>
+      action: collectionSubmit((data) =>
         handleSubmitCollectionData(data, id, collectionData)
       ),
     });
@@ -344,7 +389,7 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   background-color: ${colors.neutral[50]};
-  overflow: hidden;
+  overflow: hidden auto;
 `;
 
 const Wrapper = styled.div`

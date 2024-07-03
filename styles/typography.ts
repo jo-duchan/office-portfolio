@@ -8,6 +8,14 @@ const heading3 = {
   `,
 };
 
+const heading5 = {
+  bold: css`
+    font-size: 16px;
+    line-height: normal;
+    font-weight: 700;
+  `,
+};
+
 const label1 = {
   bold: css`
     font-size: 14px;
@@ -18,7 +26,6 @@ const label1 = {
     font-size: 14px;
     font-weight: 500;
     line-height: normal;
-    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -32,13 +39,11 @@ const label2 = {
     font-size: 12px;
     font-weight: 500;
     line-height: normal;
-    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 12px;
     font-weight: 400;
     line-height: normal;
-    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -47,13 +52,11 @@ const body1 = {
     font-size: 18px;
     font-weight: 500;
     line-height: 130%;
-    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 18px;
     font-weight: 400;
     line-height: 130%;
-    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -62,13 +65,11 @@ const body2 = {
     font-size: 16px;
     font-weight: 500;
     line-height: 130%;
-    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 16px;
     font-weight: 400;
     line-height: 130%;
-    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -77,13 +78,11 @@ const body3 = {
     font-size: 14px;
     font-weight: 500;
     line-height: 130%;
-    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 14px;
     font-weight: 400;
     line-height: 130%;
-    /* letter-spacing: -0.005em; */
   `,
 };
 
@@ -92,18 +91,17 @@ const body4 = {
     font-size: 12px;
     font-weight: 500;
     line-height: 130%;
-    /* letter-spacing: -0.005em; */
   `,
   regular: css`
     font-size: 12px;
     font-weight: 400;
     line-height: 130%;
-    /* letter-spacing: -0.005em; */
   `,
 };
 
 const textStyles = {
   heading3,
+  heading5,
   label1,
   label2,
   body1,

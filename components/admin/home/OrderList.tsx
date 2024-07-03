@@ -5,45 +5,51 @@ import {
   type UseFormSetValue,
   type FieldValues,
 } from "react-hook-form";
-
-// 초기값으로 심플리스트 받아서,
-// 999가 아닌 값을 로컬 상태로 저장, (init)
-// register, setValue 등을 받아 내부에서 map으로 OrderItem List 랜더링
-// sumbit시 data 넘겨주고 submit save 함수에서 최종 order 관련 데이터 저장
-
-// 999는 add시 로컬 상태에 푸시
-// 반대로 remove시 로컬 상태에서 제외
+import { CollectionSimple } from "@/type/collection-list";
+import textStyles from "@/styles/typography";
+import { colors, round } from "@/styles/primitive-tokens";
+import Icons from "@/styles/iconography";
 
 interface Props {
+  initialOrders: CollectionSimple[];
+  initialUnorders: CollectionSimple[];
   register: UseFormRegister<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
 }
 
-const dummy_order = ["title-1", "title-2", "title-3", "title-4"];
-const dummy_unorder = ["title-5", "title-6", "title-7"];
+interface StyledProps {
+  $iconColor: string;
+  $bgColor: string;
+  $activeColor: string;
+}
 
-function OrderList({ register, setValue }: Props) {
-  const [orders, setOrders] = useState<string[]>();
-  const [unorders, setUnorders] = useState<string[]>();
+function OrderList({
+  initialOrders,
+  initialUnorders,
+  register,
+  setValue,
+}: Props) {
+  const [orders, setOrders] = useState<CollectionSimple[]>();
+  const [unorders, setUnorders] = useState<CollectionSimple[]>();
 
   useEffect(() => {
     // init
-    // setValue("orders", "");
-    // setValue("unorders", "");
-    setOrders([...dummy_order]);
-    setUnorders([...dummy_unorder]);
+    setOrders([...initialOrders]);
+    setUnorders([...initialUnorders]);
   }, []);
 
   useEffect(() => {
     if (!orders) return;
-    console.log("orders", orders);
-    setValue("orders", orders.join(","));
+
+    const ordersToArray = orders.map((item) => item.title);
+    setValue("orders", JSON.stringify(ordersToArray));
   }, [orders]);
 
   useEffect(() => {
     if (!unorders) return;
-    console.log("unorders", unorders);
-    setValue("unorders", unorders.join(","));
+
+    const unordersToArray = unorders.map((item) => item.title);
+    setValue("unorders", JSON.stringify(unordersToArray));
   }, [unorders]);
 
   const handleOrderUp = (current: number) => {
@@ -87,27 +93,60 @@ function OrderList({ register, setValue }: Props) {
 
   return (
     <Container>
-      <Orders>
-        {orders?.map((itemId, idx) => (
-          <div className="item" key={itemId}>
-            {itemId}
-            <div onClick={() => handleOrderUp(idx)}>up</div>
-            <div onClick={() => handleOrderDown(idx)}>down</div>
-            <div onClick={() => handleRemoveOrder(idx)}>Remove</div>
-          </div>
+      <List>
+        <Title>Order List</Title>
+        {orders?.map((item, idx) => (
+          <Item className="item" key={item.title}>
+            <ItemIndex>{String(idx + 1).padStart(3, "0")}</ItemIndex>
+            <ItemThumbnail src={item.thumbnail.url} />
+            <ItemTitle>{item.title}</ItemTitle>
+            <OrderButton
+              onClick={() => handleOrderUp(idx)}
+              $iconColor={colors.neutral[700]}
+              $bgColor={colors.neutral[100]}
+              $activeColor={colors.neutral[200]}
+            >
+              <Icons.up />
+            </OrderButton>
+            <OrderButton
+              onClick={() => handleOrderDown(idx)}
+              $iconColor={colors.neutral[700]}
+              $bgColor={colors.neutral[100]}
+              $activeColor={colors.neutral[200]}
+            >
+              <Icons.down />
+            </OrderButton>
+            <OrderButton
+              onClick={() => handleRemoveOrder(idx)}
+              $iconColor={colors.red[400]}
+              $bgColor={colors.red[100]}
+              $activeColor={colors.red[200]}
+            >
+              <Icons.remove />
+            </OrderButton>
+          </Item>
         ))}
         <input type="text" {...register("orders")} />
-      </Orders>
-
-      <Unorders>
-        {unorders?.map((itemId, idx) => (
-          <div className="item" key={itemId}>
-            {itemId}
-            <div onClick={() => handleAddOrder(idx)}>add</div>
-          </div>
+      </List>
+      <List>
+        <Title>Unorder List</Title>
+        {unorders?.map((item, idx) => (
+          <Item className="item" key={item.title}>
+            <ItemIndex>000</ItemIndex>
+            <ItemThumbnail src={item.thumbnail.url} />
+            <ItemTitle>{item.title}</ItemTitle>
+            <OrderButton
+              onClick={() => handleAddOrder(idx)}
+              $iconColor={colors.secondary[400]}
+              $bgColor={colors.secondary[100]}
+              $activeColor={colors.secondary[100]}
+            >
+              <Icons.add />
+            </OrderButton>
+          </Item>
         ))}
         <input type="text" {...register("unorders")} />
-      </Unorders>
+      </List>
     </Container>
   );
 }
@@ -117,7 +156,7 @@ export default OrderList;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 
   .item {
     display: flex;
@@ -125,14 +164,85 @@ const Container = styled.div`
   }
 `;
 
-const Orders = styled.div`
-  & > input {
+const List = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  & input {
     display: none;
   }
 `;
 
-const Unorders = styled.div`
-  & > input {
-    display: none;
+const Title = styled.h4`
+  ${textStyles.heading5.bold};
+  color: ${colors.neutral[800]};
+`;
+
+const Item = styled.li`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 48px;
+  padding: 8px;
+  background-color: ${colors.neutral[0]};
+  border-radius: ${`${round.m}px`};
+`;
+
+const ItemIndex = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  border-radius: ${`${round.s}px`};
+  background-color: ${colors.primary[100]};
+  color: ${colors.primary[500]};
+  ${textStyles.label2.medium};
+`;
+
+const ItemThumbnail = styled.img`
+  display: block;
+  width: 52px;
+  min-width: 52px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: ${`${round.s}px`};
+  overflow: hidden;
+`;
+
+const ItemTitle = styled.div`
+  width: 174px;
+  height: 32px;
+  padding: 6px 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  ${textStyles.label2.medium};
+  color: ${colors.neutral[800]};
+`;
+
+const OrderButton = styled.div<StyledProps>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  margin-left: auto;
+  background-color: ${({ $bgColor }) => $bgColor};
+  border-radius: ${`${round.s}px`};
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 200ms ease-in-out;
+
+  & svg path {
+    fill: ${({ $iconColor }) => $iconColor};
+  }
+
+  &:active {
+    background-color: ${({ $activeColor }) => $activeColor};
   }
 `;
