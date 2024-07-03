@@ -95,4 +95,5 @@ const TextButton = styled.span`
   text-underline-offset: 0.2em;
   cursor: pointer;
   user-select: none;
+  margin-left: 4px;
 `;

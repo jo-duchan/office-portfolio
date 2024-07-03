@@ -309,7 +309,7 @@ const EmptyContent = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  height: 653px;
   background-color: ${withAlpha(colors.neutral[100], 0.4)};
   border-radius: ${`${round.l}px`};
   color: ${colors.neutral[500]};
