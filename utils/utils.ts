@@ -11,10 +11,10 @@ export function convertImageUrl(url: string = "") {
 }
 
 export function checkImageFileSize(size: number = 0) {
-  let maxSize = 5 * 1024 * 1024;
+  let maxSize = 3 * 1024 * 1024;
 
   if (size > maxSize) {
-    window.alert("이미지 사이즈는 5MB 이내로 가능합니다.");
+    window.alert("이미지 사이즈는 3MB 이내로 가능합니다.");
     return false;
   }
 
