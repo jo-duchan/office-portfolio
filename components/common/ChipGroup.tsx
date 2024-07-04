@@ -38,6 +38,10 @@ function Chip({ value, index, onUpdateItem, onRemoveItem }: ChipProps) {
       inner.current?.blur();
       return;
     }
+
+    if (e.key === "Backspace" && text.current === "") {
+      onRemoveItem(index);
+    }
   };
 
   const handleBlur = () => {
