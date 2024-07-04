@@ -9,6 +9,7 @@ import { CollectionSimple } from "@/type/collection-list";
 import textStyles from "@/styles/typography";
 import { colors, round } from "@/styles/primitive-tokens";
 import Icons from "@/styles/iconography";
+import Visibility from "@/components/common/Visibility";
 
 interface Props {
   initialOrders: CollectionSimple[];
@@ -126,6 +127,9 @@ function OrderList({
             </OrderButton>
           </Item>
         ))}
+        <Visibility visible={orders === undefined || orders.length <= 0}>
+          <EmptyList>내용이 없어요.</EmptyList>
+        </Visibility>
         <input type="text" {...register("orders")} />
       </List>
       <List>
@@ -145,6 +149,9 @@ function OrderList({
             </OrderButton>
           </Item>
         ))}
+        <Visibility visible={unorders === undefined || unorders.length <= 0}>
+          <EmptyList>내용이 없어요.</EmptyList>
+        </Visibility>
         <input type="text" {...register("unorders")} />
       </List>
     </Container>
@@ -245,4 +252,17 @@ const OrderButton = styled.div<StyledProps>`
   &:active {
     background-color: ${({ $activeColor }) => $activeColor};
   }
+`;
+
+const EmptyList = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  background-color: ${colors.neutral[100]};
+  border-radius: ${`${round.m}px`};
+
+  ${textStyles.body4.medium};
+  color: ${colors.neutral[400]};
 `;

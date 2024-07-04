@@ -117,7 +117,7 @@ export default function AdminHomePage({ simpleList }: Props) {
           setValue={orderSetValue}
         />
       ),
-      actionLabel: "Done",
+      actionLabel: "Save",
       action: orderSubmit(handleUpdateOrder),
     });
   };
