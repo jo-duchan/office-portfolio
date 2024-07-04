@@ -259,7 +259,18 @@ export default function AdminHomePage({ simpleList }: Props) {
       }
       hideProgress();
     } else {
-      collectionReset({});
+      collectionReset({
+        title: "",
+        description: "",
+        keyword: "",
+      });
+      setAssets((current) => {
+        const newAssets = current;
+        newAssets.desktop = { file: null };
+        newAssets.mobile = { file: null };
+
+        return { ...newAssets };
+      });
     }
 
     const modalContent = (
