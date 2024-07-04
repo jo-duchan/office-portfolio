@@ -17,7 +17,7 @@ export default function Home({ simpleList }: Props) {
   return (
     <>
       <Head>
-        <title></title>
+        <title>WACKY</title>
       </Head>
       <Container>
         Home Page

@@ -1,10 +1,12 @@
-import React from "react";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import React, { useEffect } from "react";
 import * as ReactDOMServer from "react-dom/server";
 import styled from "styled-components";
 import { GetStaticPropsContext, GetStaticPaths } from "next";
 import { getCollectionPublicList } from "@/actions/collection-list-action";
 import { getCollection } from "@/actions/collection-action";
-import { CollectionData } from "@/type/collection";
+import { CollectionData, CollectionMetadata } from "@/type/collection";
 import PATH from "@/constants/path";
 import media from "@/styles/media";
 import collectionLargeStyle from "@/styles/collection-large";
@@ -13,12 +15,32 @@ import Renderer from "@/components/common/Renderer";
 import { convertTextToSlug } from "@/utils/utils";
 
 interface Props {
-  collection: string;
+  metadata: CollectionMetadata;
+  HTML: string;
 }
 
-export default function PortfolioDetailViewPage({ collection }: Props) {
+export default function PortfolioDetailViewPage({ metadata, HTML }: Props) {
+  const router = useRouter();
+  const { title, description, keyword, shareImg, publish } = metadata;
+
+  useEffect(() => {
+    if (!publish) {
+      router.replace(PATH.ROOT);
+    }
+  }, [publish]);
   return (
-    <Container dangerouslySetInnerHTML={{ __html: collection }}></Container>
+    <>
+      <Head>
+        <title>{`WACKY - ${title}`}</title>
+        <meta name="description" content={description} />
+        <meta name="keywords" content={keyword} />
+        <meta itemProp="image" content={shareImg.url} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:image" content={shareImg.url} />
+      </Head>
+      <Container dangerouslySetInnerHTML={{ __html: HTML }}></Container>
+    </>
   );
 }
 
@@ -59,14 +81,15 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     };
   }
 
-  const collection = ReactDOMServer.renderToStaticMarkup(
+  const metadata = collectionData.metadata;
+  const HTML = ReactDOMServer.renderToStaticMarkup(
     <Renderer data={collectionData.collection} editable={false} />
   );
 
   return {
     props: {
-      collectionId,
-      collection,
+      metadata,
+      HTML,
     },
   };
 };
